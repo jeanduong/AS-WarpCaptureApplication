@@ -309,6 +309,8 @@ public class PhotoActivity extends AppCompatActivity {
                         // http://stackoverflow.com/questions/26673127/android-imagereader-acquirelatestimage-returns-invalid-jpg
                         // http://eazyprogramming.blogspot.fr/2013/01/passing-image-between-activities.html
                         // http://www.jayrambhia.com/blog/pass-activity-bitmap
+
+                        // Warning: impossible to pass ByteBuffer in an intent
                         image = reader.acquireLatestImage();
                         ByteBuffer bb = image.getPlanes()[0].getBuffer();
                         byte[] bytes = new byte[bb.capacity()];
