@@ -305,10 +305,14 @@ public class PhotoActivity extends AppCompatActivity {
                     Image image = null;
 
                     try {
+                        // See
+                        // http://stackoverflow.com/questions/26673127/android-imagereader-acquirelatestimage-returns-invalid-jpg
+                        // http://eazyprogramming.blogspot.fr/2013/01/passing-image-between-activities.html
+                        // http://www.jayrambhia.com/blog/pass-activity-bitmap
                         image = reader.acquireLatestImage();
-                        ByteBuffer buffer = image.getPlanes()[0].getBuffer();
-                        byte[] bytes = new byte[buffer.capacity()];
-                        buffer.get(bytes);
+                        ByteBuffer bb = image.getPlanes()[0].getBuffer();
+                        byte[] bytes = new byte[bb.capacity()];
+                        bb.get(bytes);
                         save(bytes);
                     }
                     catch (FileNotFoundException e) {e.printStackTrace();}
