@@ -8,7 +8,6 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.Toast;
 
 public class DisplayActivity extends AppCompatActivity {
 
@@ -18,22 +17,22 @@ public class DisplayActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_display);
+        ImageView iv = (ImageView) findViewById(R.id.vizualizer);
 
-        if (this.getIntent().hasExtra(MainActivity.LABEL_EXTRA_CAPTURED_IMAGE))
+        if (this.getIntent().hasExtra(MainActivity.LABEL_EXTRA_CAPTURED_BYTES))
         {
             Log.d(TAG, "Array of bytes found");
-            Log.d(TAG, "Data length = " + this.getIntent().getByteArrayExtra(MainActivity.LABEL_EXTRA_CAPTURED_IMAGE).length);
+            Log.d(TAG, "Data length = " + this.getIntent().getByteArrayExtra(MainActivity.LABEL_EXTRA_CAPTURED_BYTES).length);
+
+            byte[] data = this.getIntent().getByteArrayExtra(MainActivity.LABEL_EXTRA_CAPTURED_BYTES);
+            Bitmap bm = BitmapFactory.decodeByteArray(data, 0, data.length);
+
+            iv.setImageBitmap(bm);
         }
         else
         {
-            Log.d(TAG, "No array of bytes to build image");
+            Log.e(TAG, "No array of bytes to build image");
         }
-
-        //byte[] data = this.getIntent().getByteArrayExtra(MainActivity.LABEL_EXTRA_CAPTURED_IMAGE);
-        //Bitmap bm = BitmapFactory.decodeByteArray(data, 0, data.length);
-        //ImageView iv = (ImageView) findViewById(R.id.vizualizer);
-
-        //iv.setImageBitmap(bm);
 
         ((Button) findViewById(R.id.close_display_button)).setOnClickListener(new View.OnClickListener()
         {

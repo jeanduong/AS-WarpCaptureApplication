@@ -1,5 +1,6 @@
 package com.example.jeanduong.myapplication;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Environment;
@@ -7,17 +8,14 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.EditText;
 import android.widget.Toast;
-
-import java.io.File;
 
 public class MainActivity extends AppCompatActivity {
 
     Bitmap croped_image;
     String storage_location = Environment.getExternalStorageDirectory().toString();
 
-    final static String LABEL_EXTRA_CAPTURED_IMAGE = "CAPTURED_IMAGE";
+    final static String LABEL_EXTRA_CAPTURED_BYTES = "CAPTURED_BYTES";
     final static String LABEL_EXTRA_CROPED_IMAGE = "CROPED_IMAGE";
 
     final static int SNAPSHOT_REQUEST_CODE = 1;
@@ -59,32 +57,52 @@ public class MainActivity extends AppCompatActivity {
 
         if (request_code == SNAPSHOT_REQUEST_CODE)
         {
-            if (result_code != RESULT_OK)
-            {
-                if (data_intent.getExtras() == null)
-                    Log.e(TAG, "Null extras");
 
-                if (data_intent.hasExtra(LABEL_EXTRA_CAPTURED_IMAGE))
+
+            Log.d(TAG, "****** Result code   : " + result_code);
+            Log.d(TAG, "****** Expected code : " + Activity.RESULT_OK);
+
+
+            if (result_code == Activity.RESULT_OK)
+            {
+                if (data_intent.getExtras() != null)
                 {
-                    Log.d(TAG, "Extra available (array of bytes)");
-                    Log.d(TAG, "Data length = " + this.getIntent().getByteArrayExtra(MainActivity.LABEL_EXTRA_CAPTURED_IMAGE).length);
+                    if (data_intent.hasExtra(LABEL_EXTRA_CAPTURED_BYTES))
+                    {
+                        Log.d(TAG, "****** Extra available (array of bytes)");
+                        Log.d(TAG, "****** Data length = " + this.getIntent().getByteArrayExtra(MainActivity.LABEL_EXTRA_CAPTURED_BYTES).length);
 
                     /*
                     Intent itt_crop = new Intent(this, CropActivity.class);
-                    itt_crop.putExtra(LABEL_EXTRA_CAPTURED_IMAGE, data_intent.getByteArrayExtra(LABEL_EXTRA_CAPTURED_IMAGE));
+                    itt_crop.putExtra(LABEL_EXTRA_CAPTURED_BYTES, data_intent.getByteArrayExtra(LABEL_EXTRA_CAPTURED_BYTES));
                     startActivityForResult(itt_crop, MUTILATION_REQUEST_CODE);
                     */
 
-                    /*
-                    Intent itt = new Intent(this, DisplayActivity.class);
-                    itt.putExtra(LABEL_EXTRA_CAPTURED_IMAGE, data_intent.getByteArrayExtra(LABEL_EXTRA_CAPTURED_IMAGE));
-                    startActivity(itt);
-                    */
+
+                        Intent itt = new Intent(this, DisplayActivity.class);
+                        itt.putExtra(LABEL_EXTRA_CAPTURED_BYTES, data_intent.getByteArrayExtra(LABEL_EXTRA_CAPTURED_BYTES));
+
+                        // Verify the intent will resolve to at least one activity
+                        if (itt.resolveActivity(getPackageManager()) != null)
+                            startActivity(itt);
+                        else
+                            Toast.makeText(this, "Cannot display!", Toast.LENGTH_LONG).show();
+                    } else
+                    {
+                        Toast.makeText(this, "Missing array of bytes in extra", Toast.LENGTH_LONG).show();
+                        Log.e(TAG, "****** Missing array of bytes in extra");
+                    }
                 }
                 else
                 {
-                    Log.e(TAG, "Missing extra (array of bytes)");
+                    Toast.makeText(this, "Void result bundle", Toast.LENGTH_LONG).show();
+                    Log.e(TAG, "****** Void result bundle");
                 }
+            }
+            else
+            {
+                Toast.makeText(this, "Photo activity failed", Toast.LENGTH_LONG).show();
+                Log.e(TAG, "****** Photo activity failed");
             }
         }
         else if (request_code == MUTILATION_REQUEST_CODE)

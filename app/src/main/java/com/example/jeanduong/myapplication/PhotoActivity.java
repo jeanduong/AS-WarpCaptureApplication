@@ -6,14 +6,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.ImageFormat;
 import android.graphics.Paint;
-import android.graphics.Rect;
 import android.graphics.SurfaceTexture;
-import android.graphics.YuvImage;
 import android.hardware.camera2.CameraAccessException;
 import android.hardware.camera2.CameraCaptureSession;
 import android.hardware.camera2.CameraCharacteristics;
@@ -43,13 +40,11 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -64,7 +59,7 @@ public class PhotoActivity extends AppCompatActivity {
     private TextureView preview_area;
     private ImageView grid_guide;
 
-    private static final String TAG = "Snapshot"; // For log output
+    private static final String TAG = "Snapshot activity"; // For log output
 
     // Camera device stuffs
 
@@ -98,9 +93,6 @@ public class PhotoActivity extends AppCompatActivity {
     private Handler background_handler;
     private HandlerThread background_thread;
 
-    // Intent to return results
-    private Intent result_intent = new Intent();
-
     /////////////////////////////////////
     // Setup when activity is launched //
     /////////////////////////////////////
@@ -113,12 +105,12 @@ public class PhotoActivity extends AppCompatActivity {
         // Create UI elements
 
         preview_area = (TextureView) findViewById(R.id.preview_area);
-        grid_guide = (ImageView) findViewById(R.id.grid);
         shutter_button = (Button) findViewById(R.id.shutter_button);
+        grid_guide = (ImageView) findViewById(R.id.grid);
 
         assert preview_area != null;
-        assert grid_guide != null;
         assert shutter_button != null;
+        assert grid_guide != null;
 
         // Draw a green grid
         DisplayMetrics dimension = new DisplayMetrics();
@@ -167,9 +159,6 @@ public class PhotoActivity extends AppCompatActivity {
 
                 //String formatted_date = date_format.format(cal.getTime());
                 //Toast.makeText(PhotoActivity.this, "Snapshot at " + formatted_date, Toast.LENGTH_SHORT).show();
-
-                // Set result and finish the activity
-                setResult(Activity.RESULT_OK, result_intent);
 
                 finish();
             }
@@ -264,7 +253,6 @@ public class PhotoActivity extends AppCompatActivity {
         }
 
         CameraManager manager = (CameraManager) getSystemService(Context.CAMERA_SERVICE);
-
         try {
             CameraCharacteristics characteristics = manager.getCameraCharacteristics(camera_device.getId());
             Size[] jpegSizes = null;
@@ -299,15 +287,34 @@ public class PhotoActivity extends AppCompatActivity {
             ImageReader.OnImageAvailableListener readerListener = new ImageReader.OnImageAvailableListener() {
                 @Override
                 public void onImageAvailable(ImageReader reader) {
-                    Log.d(TAG, "Image available");
+                    Log.e(TAG, "\"*************** ENTERING LISTENER IMPLEMENTATION");
                     Image image = null;
-
                     try {
                         image = reader.acquireLatestImage();
                         ByteBuffer bb = image.getPlanes()[0].getBuffer();
                         byte[] bts = new byte[bb.capacity()];
+
                         bb.get(bts);
                         save(bts);
+
+                        Intent result_intent = new Intent();
+                        Bundle bd = new Bundle();
+
+                        bd.putByteArray(MainActivity.LABEL_EXTRA_CAPTURED_BYTES, bts);
+                        result_intent.putExtras(bd);
+
+
+
+
+
+                        if (bd.getByteArray(MainActivity.LABEL_EXTRA_CAPTURED_BYTES) == null)
+                            Log.e(TAG, "*************** SOMETHING HAPPENED DURING BUNDLE FILLING");
+                        else
+                            Log.e(TAG, "*************** BUNDLE SHOULD CONTAIN ARRAY OF BYTES");
+
+                        setResult(Activity.RESULT_OK, result_intent);
+
+
 
                         // See
                         // http://stackoverflow.com/questions/26673127/android-imagereader-acquirelatestimage-returns-invalid-jpg
@@ -323,7 +330,7 @@ public class PhotoActivity extends AppCompatActivity {
                         yuvimage.compressToJpeg(new Rect(0, 0, w, h), 100, baos); // Where 100 is the quality of the generated jpeg
                         byte[] jpegArray = baos.toByteArray();
 
-                        result_intent.putExtra(MainActivity.LABEL_EXTRA_CAPTURED_IMAGE, jpegArray);
+                        result_intent.putExtra(MainActivity.LABEL_EXTRA_CAPTURED_BYTES, jpegArray);
                         */
 
                         /*
@@ -358,7 +365,7 @@ public class PhotoActivity extends AppCompatActivity {
                         ByteArrayOutputStream baos = new ByteArrayOutputStream();
                         bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
 
-                        result_intent.putExtra(MainActivity.LABEL_EXTRA_CAPTURED_IMAGE, baos.toByteArray());
+                        result_intent.putExtra(MainActivity.LABEL_EXTRA_CAPTURED_BYTES, baos.toByteArray());
                         */
 
                         /*
@@ -378,26 +385,23 @@ public class PhotoActivity extends AppCompatActivity {
                         bitmap.compress(Bitmap.CompressFormat.PNG, 100, baos);
                         byte[] b = baos.toByteArray();
 
-                        result_intent.putExtra(MainActivity.LABEL_EXTRA_CAPTURED_IMAGE, b);
+                        result_intent.putExtra(MainActivity.LABEL_EXTRA_CAPTURED_BYTES, b);
                         */
 
                     }
                     catch (FileNotFoundException e) {e.printStackTrace();}
                     catch (IOException e) {e.printStackTrace();}
-                    finally {if (image != null) image.close();}
+                    finally {if (image != null) {image.close();}}
                 }
 
                 private void save(byte[] bts) throws IOException {
                     OutputStream output = null;
-
                     try {
-
                         output = new FileOutputStream(file);
                         output.write(bts);
-                        Log.d(TAG, "Bytes saved in file");
-                        result_intent.putExtra(MainActivity.LABEL_EXTRA_CAPTURED_IMAGE, bts);
+                        Log.e(TAG, "*************** BYTES SAVED IN FILE");
                     }
-                    finally {if (output != null) output.close();}
+                    finally {if (output != null) {output.close();}}
                 }
 
             };
@@ -408,10 +412,6 @@ public class PhotoActivity extends AppCompatActivity {
                 @Override
                 public void onCaptureCompleted(CameraCaptureSession session, CaptureRequest request, TotalCaptureResult result) {
                     super.onCaptureCompleted(session, request, result);
-
-                    Toast.makeText(PhotoActivity.this, "Capture completed", Toast.LENGTH_SHORT).show();
-                    Log.v(TAG, "Capture completed");
-
                     createCameraPreview();
                 }
             };
@@ -428,7 +428,7 @@ public class PhotoActivity extends AppCompatActivity {
         } catch (CameraAccessException e) {e.printStackTrace();}
     }
 
-    // Create a preview to display what the camera is sees at
+    // Create a preview to display what the camera is staring at
 
     protected void createCameraPreview() {
         try {
@@ -535,7 +535,7 @@ public class PhotoActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         Log.e(TAG, "onPause");
-        //closeCamera();
+        closeCamera(); // WHY ???
         stopBackgroundThread();
         super.onPause();
     }
