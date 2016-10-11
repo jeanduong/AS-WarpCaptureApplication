@@ -1,6 +1,7 @@
 package com.example.jeanduong.myapplication;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -168,7 +169,7 @@ public class PhotoActivity extends AppCompatActivity {
                 //Toast.makeText(PhotoActivity.this, "Snapshot at " + formatted_date, Toast.LENGTH_SHORT).show();
 
                 // Set result and finish the activity
-                setResult(MainActivity.SNAPSHOT_REQUEST_CODE, result_intent);
+                setResult(Activity.RESULT_OK, result_intent);
 
                 finish();
             }
@@ -538,6 +539,4 @@ public class PhotoActivity extends AppCompatActivity {
         stopBackgroundThread();
         super.onPause();
     }
-
-
 }

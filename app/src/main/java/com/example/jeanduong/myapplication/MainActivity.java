@@ -34,15 +34,21 @@ public class MainActivity extends AppCompatActivity {
     // Called when the user clicks the help button
     // Display some (hopefully) useful instructions
     public void run_help(View view) {
-        Intent itt = new Intent(this, HelpActivity.class);
-        startActivity(itt);
+        Intent itt_help = new Intent(this, HelpActivity.class);
+
+        // Verify the intent will resolve to at least one activity
+        if (itt_help.resolveActivity(getPackageManager()) != null)
+            startActivity(itt_help);
     }
 
     // Photo activity
     // Called when the user clicks the photo capture button
     public void capture_photo(View view) {
         Intent itt_snap = new Intent(this, PhotoActivity.class);
-        startActivityForResult(itt_snap, SNAPSHOT_REQUEST_CODE);
+
+        // Verify the intent will resolve to at least one activity
+        if (itt_snap.resolveActivity(getPackageManager()) != null)
+            startActivityForResult(itt_snap, SNAPSHOT_REQUEST_CODE);
     }
 
     // Collect results from activities
@@ -53,7 +59,7 @@ public class MainActivity extends AppCompatActivity {
 
         if (request_code == SNAPSHOT_REQUEST_CODE)
         {
-            if (data_intent != null)
+            if (result_code != RESULT_OK)
             {
                 if (data_intent.getExtras() == null)
                     Log.e(TAG, "Null extras");

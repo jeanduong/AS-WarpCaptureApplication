@@ -19,7 +19,6 @@ public class DisplayActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_display);
 
-
         if (this.getIntent().hasExtra(MainActivity.LABEL_EXTRA_CAPTURED_IMAGE))
         {
             Log.d(TAG, "Array of bytes found");
