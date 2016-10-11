@@ -18,8 +18,8 @@ public class MainActivity extends AppCompatActivity {
     final static String LABEL_EXTRA_CAPTURED_BYTES = "CAPTURED_BYTES";
     final static String LABEL_EXTRA_CROPED_IMAGE = "CROPED_IMAGE";
 
-    final static int SNAPSHOT_REQUEST_CODE = 1;
-    final static int MUTILATION_REQUEST_CODE = 2;
+    final static int SNAPSHOT_REQUEST_CODE = 13;
+    final static int MUTILATION_REQUEST_CODE = 17;
 
     private static final String TAG = "Main activity"; // For log output
 
@@ -57,11 +57,8 @@ public class MainActivity extends AppCompatActivity {
 
         if (request_code == SNAPSHOT_REQUEST_CODE)
         {
-
-
             Log.d(TAG, "****** Result code   : " + result_code);
             Log.d(TAG, "****** Expected code : " + Activity.RESULT_OK);
-
 
             if (result_code == Activity.RESULT_OK)
             {
@@ -69,8 +66,18 @@ public class MainActivity extends AppCompatActivity {
                 {
                     if (data_intent.hasExtra(LABEL_EXTRA_CAPTURED_BYTES))
                     {
-                        Log.d(TAG, "****** Extra available (array of bytes)");
-                        Log.d(TAG, "****** Data length = " + this.getIntent().getByteArrayExtra(MainActivity.LABEL_EXTRA_CAPTURED_BYTES).length);
+                        Log.d(TAG, "****** Array of bytes available in extra");
+
+                        if (data_intent.getByteArrayExtra(LABEL_EXTRA_CAPTURED_BYTES) != null)
+                        {
+                            Log.d(TAG, "****** Array is not null");
+                        }
+                        else
+                        {
+                            Log.d(TAG, "****** Array is null");
+                        }
+
+
 
                     /*
                     Intent itt_crop = new Intent(this, CropActivity.class);
@@ -78,7 +85,7 @@ public class MainActivity extends AppCompatActivity {
                     startActivityForResult(itt_crop, MUTILATION_REQUEST_CODE);
                     */
 
-
+/*
                         Intent itt = new Intent(this, DisplayActivity.class);
                         itt.putExtra(LABEL_EXTRA_CAPTURED_BYTES, data_intent.getByteArrayExtra(LABEL_EXTRA_CAPTURED_BYTES));
 
@@ -87,6 +94,11 @@ public class MainActivity extends AppCompatActivity {
                             startActivity(itt);
                         else
                             Toast.makeText(this, "Cannot display!", Toast.LENGTH_LONG).show();
+                        */
+
+
+
+
                     } else
                     {
                         Toast.makeText(this, "Missing array of bytes in extra", Toast.LENGTH_LONG).show();

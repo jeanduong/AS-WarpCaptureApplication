@@ -93,6 +93,9 @@ public class PhotoActivity extends AppCompatActivity {
     private Handler background_handler;
     private HandlerThread background_thread;
 
+    public Intent result_intent = new Intent();
+    public byte[] image_arry_bytes = null;
+
     /////////////////////////////////////
     // Setup when activity is launched //
     /////////////////////////////////////
@@ -153,12 +156,30 @@ public class PhotoActivity extends AppCompatActivity {
 
             @Override
             public void onClick(View v) {
-
-                //Log.v(TAG, "Begin tedious things to catch a picture");
                 do_tedious_things_just_to_capture_a_picture(); // Code too long to be placed here
 
                 //String formatted_date = date_format.format(cal.getTime());
                 //Toast.makeText(PhotoActivity.this, "Snapshot at " + formatted_date, Toast.LENGTH_SHORT).show();
+
+                Bundle bd = new Bundle();
+
+                bd.putByteArray(MainActivity.LABEL_EXTRA_CAPTURED_BYTES, image_arry_bytes);
+                result_intent.putExtras(bd);
+
+                if (image_arry_bytes == null)
+                    Log.e(TAG, "****** Image byte array is null!!!");
+                else
+                {
+                    Log.e(TAG, "****** Image byte array is valid");
+                    Log.e(TAG, "****** Size = " + image_arry_bytes.length);
+                }
+
+                if (getParent() == null) {
+                    setResult(Activity.RESULT_OK, result_intent);
+                }
+                else {
+                    getParent().setResult(Activity.RESULT_OK, result_intent);
+                }
 
                 finish();
             }
@@ -287,34 +308,30 @@ public class PhotoActivity extends AppCompatActivity {
             ImageReader.OnImageAvailableListener readerListener = new ImageReader.OnImageAvailableListener() {
                 @Override
                 public void onImageAvailable(ImageReader reader) {
-                    Log.e(TAG, "\"*************** ENTERING LISTENER IMPLEMENTATION");
                     Image image = null;
                     try {
                         image = reader.acquireLatestImage();
                         ByteBuffer bb = image.getPlanes()[0].getBuffer();
+                        /*
                         byte[] bts = new byte[bb.capacity()];
 
                         bb.get(bts);
                         save(bts);
+                        */
 
-                        Intent result_intent = new Intent();
-                        Bundle bd = new Bundle();
+                        image_arry_bytes = new byte[bb.capacity()];
 
-                        bd.putByteArray(MainActivity.LABEL_EXTRA_CAPTURED_BYTES, bts);
-                        result_intent.putExtras(bd);
-
-
+                        bb.get(image_arry_bytes);
+                        save(image_arry_bytes);
 
 
-
-                        if (bd.getByteArray(MainActivity.LABEL_EXTRA_CAPTURED_BYTES) == null)
-                            Log.e(TAG, "*************** SOMETHING HAPPENED DURING BUNDLE FILLING");
+                        if (image_arry_bytes == null)
+                            Log.e(TAG, "************ Image byte array is null!!!");
                         else
-                            Log.e(TAG, "*************** BUNDLE SHOULD CONTAIN ARRAY OF BYTES");
-
-                        setResult(Activity.RESULT_OK, result_intent);
-
-
+                        {
+                            Log.e(TAG, "************ Image byte array is valid");
+                            Log.e(TAG, "************ Size = " + image_arry_bytes.length);
+                        }
 
                         // See
                         // http://stackoverflow.com/questions/26673127/android-imagereader-acquirelatestimage-returns-invalid-jpg
