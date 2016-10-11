@@ -10,7 +10,9 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.ImageFormat;
 import android.graphics.Paint;
+import android.graphics.Rect;
 import android.graphics.SurfaceTexture;
+import android.graphics.YuvImage;
 import android.hardware.camera2.CameraAccessException;
 import android.hardware.camera2.CameraCaptureSession;
 import android.hardware.camera2.CameraCharacteristics;
@@ -40,11 +42,13 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -165,13 +169,6 @@ public class PhotoActivity extends AppCompatActivity {
 
                 // Set result and finish the activity
                 setResult(MainActivity.SNAPSHOT_REQUEST_CODE, result_intent);
-
-                if (result_intent.hasExtra(MainActivity.LABEL_EXTRA_CAPTURED_IMAGE))
-                    Log.d(TAG, "Array of bytes found in extra");
-                else
-                    Log.e(TAG, "Array of bytes not in extra");
-
-                //Log.v(TAG, "Leaving Photo Activity");
 
                 finish();
             }
@@ -305,39 +302,101 @@ public class PhotoActivity extends AppCompatActivity {
                     Image image = null;
 
                     try {
+                        image = reader.acquireLatestImage();
+                        ByteBuffer bb = image.getPlanes()[0].getBuffer();
+                        byte[] bts = new byte[bb.capacity()];
+                        bb.get(bts);
+                        save(bts);
+
                         // See
                         // http://stackoverflow.com/questions/26673127/android-imagereader-acquirelatestimage-returns-invalid-jpg
                         // http://eazyprogramming.blogspot.fr/2013/01/passing-image-between-activities.html
                         // http://www.jayrambhia.com/blog/pass-activity-bitmap
 
-                        // Warning: impossible to pass ByteBuffer in an intent
-                        image = reader.acquireLatestImage();
-                        ByteBuffer bb = image.getPlanes()[0].getBuffer();
-                        byte[] bytes = new byte[bb.capacity()];
-                        bb.get(bytes);
-                        save(bytes);
+                        /*
+                        // From http://stackoverflow.com/questions/32412197/how-to-create-bitmap-from-grayscaled-byte-buffer-image
+                        int w = image.getWidth();
+                        int h = image.getHeight();
+                        YuvImage yuvimage=new YuvImage(bts, ImageFormat.NV21, w, h, null);
+                        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                        yuvimage.compressToJpeg(new Rect(0, 0, w, h), 100, baos); // Where 100 is the quality of the generated jpeg
+                        byte[] jpegArray = baos.toByteArray();
+
+                        result_intent.putExtra(MainActivity.LABEL_EXTRA_CAPTURED_IMAGE, jpegArray);
+                        */
+
+                        /*
+                        // From http://stackoverflow.com/questions/26673127/android-imagereader-acquirelatestimage-returns-invalid-jpg
+                        Bitmap bitmap = null;
+
+                        Image.Plane[] planes = image.getPlanes();
+                        if (planes[0].getBuffer() == null) {return;}
+                        int width = image.getWidth();
+                        int height = image.getHeight();
+                        int pixelStride = planes[0].getPixelStride();
+                        int rowStride = planes[0].getRowStride();
+                        int rowPadding = rowStride - pixelStride * width;
+                        byte[] newData = new byte[width * height * 4];
+
+                        int offset = 0;
+                        bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+                        ByteBuffer buffer = planes[0].getBuffer();
+                        for (int i = 0; i < height; ++i) {
+                            for (int j = 0; j < width; ++j) {
+                                int pixel = 0;
+                                pixel |= (buffer.get(offset) & 0xff) << 16;     // R
+                                pixel |= (buffer.get(offset + 1) & 0xff) << 8;  // G
+                                pixel |= (buffer.get(offset + 2) & 0xff);       // B
+                                pixel |= (buffer.get(offset + 3) & 0xff) << 24; // A
+                                bitmap.setPixel(j, i, pixel);
+                                offset += pixelStride;
+                            }
+                            offset += rowPadding;
+                        }
+
+                        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+
+                        result_intent.putExtra(MainActivity.LABEL_EXTRA_CAPTURED_IMAGE, baos.toByteArray());
+                        */
+
+                        /*
+                        final Image.Plane[] planes = image.getPlanes();
+                        final Buffer buffer = planes[0].getBuffer().rewind();
+                        int mWidth = image.getWidth();
+                        int mHeight = image.getHeight();
+                        int pixelStride = planes[0].getPixelStride();
+                        int rowStride = planes[0].getRowStride();
+                        int rowPadding = rowStride - pixelStride * mWidth;
+
+                        Bitmap bitmap = Bitmap.createBitmap(mWidth, mHeight, Bitmap.Config.ARGB_8888);
+                        bitmap.copyPixelsFromBuffer(buffer);
+                        image.close();
+
+                        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                        bitmap.compress(Bitmap.CompressFormat.PNG, 100, baos);
+                        byte[] b = baos.toByteArray();
+
+                        result_intent.putExtra(MainActivity.LABEL_EXTRA_CAPTURED_IMAGE, b);
+                        */
+
                     }
                     catch (FileNotFoundException e) {e.printStackTrace();}
                     catch (IOException e) {e.printStackTrace();}
                     finally {if (image != null) image.close();}
                 }
 
-                private void save(byte[] bytes) throws IOException {
+                private void save(byte[] bts) throws IOException {
                     OutputStream output = null;
 
                     try {
 
                         output = new FileOutputStream(file);
-                        output.write(bytes);
+                        output.write(bts);
                         Log.d(TAG, "Bytes saved in file");
-                        result_intent.putExtra(MainActivity.LABEL_EXTRA_CAPTURED_IMAGE, bytes);
-
-                        if (result_intent.hasExtra(MainActivity.LABEL_EXTRA_CAPTURED_IMAGE))
-                            Log.d(TAG, "Put array of bytes in intent successfully");
-                        else
-                            Log.d(TAG, "Failed to put array of bytes in intent");
+                        result_intent.putExtra(MainActivity.LABEL_EXTRA_CAPTURED_IMAGE, bts);
                     }
-                    finally {if (null != output) output.close();}
+                    finally {if (output != null) output.close();}
                 }
 
             };

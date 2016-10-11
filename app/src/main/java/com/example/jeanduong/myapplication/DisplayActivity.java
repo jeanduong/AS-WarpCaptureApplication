@@ -23,19 +23,19 @@ public class DisplayActivity extends AppCompatActivity {
         if (this.getIntent().hasExtra(MainActivity.LABEL_EXTRA_CAPTURED_IMAGE))
         {
             Log.d(TAG, "Array of bytes found");
+            Log.d(TAG, "Data length = " + this.getIntent().getByteArrayExtra(MainActivity.LABEL_EXTRA_CAPTURED_IMAGE).length);
         }
         else
         {
             Log.d(TAG, "No array of bytes to build image");
         }
 
-        byte[] data = this.getIntent().getByteArrayExtra(MainActivity.LABEL_EXTRA_CAPTURED_IMAGE);
-        Bitmap bm = BitmapFactory.decodeByteArray(data, 0, data.length);
-/*
-        ImageView iv = (ImageView) findViewById(R.id.vizualizer);
+        //byte[] data = this.getIntent().getByteArrayExtra(MainActivity.LABEL_EXTRA_CAPTURED_IMAGE);
+        //Bitmap bm = BitmapFactory.decodeByteArray(data, 0, data.length);
+        //ImageView iv = (ImageView) findViewById(R.id.vizualizer);
 
-        iv.setImageBitmap(bm);
-*/
+        //iv.setImageBitmap(bm);
+
         ((Button) findViewById(R.id.close_display_button)).setOnClickListener(new View.OnClickListener()
         {
             @Override

@@ -18,7 +18,7 @@ public class MainActivity extends AppCompatActivity {
     String storage_location = Environment.getExternalStorageDirectory().toString();
 
     final static String LABEL_EXTRA_CAPTURED_IMAGE = "CAPTURED_IMAGE";
-    final static String LABEL_EXTRA_CROPED_IMAGE = "CAPTURED_IMAGE";
+    final static String LABEL_EXTRA_CROPED_IMAGE = "CROPED_IMAGE";
 
     final static int SNAPSHOT_REQUEST_CODE = 1;
     final static int MUTILATION_REQUEST_CODE = 2;
@@ -30,10 +30,6 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
     }
-
-    /*** Custom stuffs ***/
-
-    static final int TAKE_PHOTO_REQUEST = 1;  // Request code
 
     // Called when the user clicks the help button
     // Display some (hopefully) useful instructions
@@ -59,22 +55,30 @@ public class MainActivity extends AppCompatActivity {
         {
             if (data_intent != null)
             {
+                if (data_intent.getExtras() == null)
+                    Log.e(TAG, "Null extras");
 
                 if (data_intent.hasExtra(LABEL_EXTRA_CAPTURED_IMAGE))
-                    Log.d(TAG, "Missing extra (array of bytes)");
-                else
+                {
                     Log.d(TAG, "Extra available (array of bytes)");
+                    Log.d(TAG, "Data length = " + this.getIntent().getByteArrayExtra(MainActivity.LABEL_EXTRA_CAPTURED_IMAGE).length);
 
-/*
-                Intent itt_crop = new Intent(this, CropActivity.class);
-                itt_crop.putExtra(LABEL_EXTRA_CAPTURED_IMAGE, data_intent.getByteArrayExtra(LABEL_EXTRA_CAPTURED_IMAGE));
-                startActivityForResult(itt_crop, MUTILATION_REQUEST_CODE);
-*/
+                    /*
+                    Intent itt_crop = new Intent(this, CropActivity.class);
+                    itt_crop.putExtra(LABEL_EXTRA_CAPTURED_IMAGE, data_intent.getByteArrayExtra(LABEL_EXTRA_CAPTURED_IMAGE));
+                    startActivityForResult(itt_crop, MUTILATION_REQUEST_CODE);
+                    */
 
-
-                Intent itt = new Intent(this, DisplayActivity.class);
-                itt.putExtra(LABEL_EXTRA_CAPTURED_IMAGE, data_intent.getByteArrayExtra(LABEL_EXTRA_CAPTURED_IMAGE));
-                startActivity(itt);
+                    /*
+                    Intent itt = new Intent(this, DisplayActivity.class);
+                    itt.putExtra(LABEL_EXTRA_CAPTURED_IMAGE, data_intent.getByteArrayExtra(LABEL_EXTRA_CAPTURED_IMAGE));
+                    startActivity(itt);
+                    */
+                }
+                else
+                {
+                    Log.e(TAG, "Missing extra (array of bytes)");
+                }
             }
         }
         else if (request_code == MUTILATION_REQUEST_CODE)
