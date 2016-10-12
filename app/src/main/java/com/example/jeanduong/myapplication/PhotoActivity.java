@@ -303,7 +303,8 @@ public class PhotoActivity extends AppCompatActivity {
             int rotation = getWindowManager().getDefaultDisplay().getRotation();
             captureBuilder.set(CaptureRequest.JPEG_ORIENTATION, ORIENTATIONS.get(rotation));
 
-            final File file = new File(Environment.getExternalStorageDirectory() + "/pic.jpg");
+            //final File file = new File(Environment.getExternalStorageDirectory() + "/pic.jpg");
+            final File file = new File(MainActivity.SNAPSHOT_FILE_NAME);
 
             ImageReader.OnImageAvailableListener readerListener = new ImageReader.OnImageAvailableListener() {
                 @Override

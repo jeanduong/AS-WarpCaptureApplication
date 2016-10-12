@@ -10,6 +10,8 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
+import java.io.File;
+
 public class MainActivity extends AppCompatActivity {
 
     Bitmap croped_image;
@@ -22,6 +24,8 @@ public class MainActivity extends AppCompatActivity {
     final static int MUTILATION_REQUEST_CODE = 17;
 
     private static final String TAG = "Main activity"; // For log output
+
+    final static String SNAPSHOT_FILE_NAME = Environment.getExternalStorageDirectory() + File.separator + "snapshot.jpg";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,11 +83,14 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-                    /*
+
                     Intent itt_crop = new Intent(this, CropActivity.class);
                     itt_crop.putExtra(LABEL_EXTRA_CAPTURED_BYTES, data_intent.getByteArrayExtra(LABEL_EXTRA_CAPTURED_BYTES));
-                    startActivityForResult(itt_crop, MUTILATION_REQUEST_CODE);
-                    */
+
+                     if (itt_crop.resolveActivity(getPackageManager()) != null)
+                        startActivityForResult(itt_crop, MUTILATION_REQUEST_CODE);
+                     else
+                         Toast.makeText(this, "Error: No image recorded", Toast.LENGTH_LONG).show();
 
 /*
                         Intent itt = new Intent(this, DisplayActivity.class);
@@ -94,7 +101,7 @@ public class MainActivity extends AppCompatActivity {
                             startActivity(itt);
                         else
                             Toast.makeText(this, "Cannot display!", Toast.LENGTH_LONG).show();
-                        */
+*/
 
 
 

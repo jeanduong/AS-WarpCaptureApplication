@@ -19,6 +19,13 @@ public class DisplayActivity extends AppCompatActivity {
         setContentView(R.layout.activity_display);
         ImageView iv = (ImageView) findViewById(R.id.vizualizer);
 
+
+        Bitmap bm = BitmapFactory.decodeFile(MainActivity.SNAPSHOT_FILE_NAME);
+
+        iv.setImageBitmap(bm);
+
+
+/*
         if (this.getIntent().hasExtra(MainActivity.LABEL_EXTRA_CAPTURED_BYTES))
         {
             Log.d(TAG, "Array of bytes found");
@@ -33,7 +40,7 @@ public class DisplayActivity extends AppCompatActivity {
         {
             Log.e(TAG, "No array of bytes to build image");
         }
-
+*/
         ((Button) findViewById(R.id.close_display_button)).setOnClickListener(new View.OnClickListener()
         {
             @Override
