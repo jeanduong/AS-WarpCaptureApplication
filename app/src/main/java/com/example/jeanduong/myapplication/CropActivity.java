@@ -13,9 +13,8 @@ public class CropActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_crop);
 
-
         ImageView snapshot_layer = (ImageView) findViewById(R.id.display_view);
-        ImageView drag_layer = (ImageView) findViewById(R.id.drag_view);
+        DragView drag_layer = (DragView) findViewById(R.id.drag_view);
 
         snapshot_layer.setImageBitmap(BitmapFactory.decodeFile(MainActivity.SNAPSHOT_FILE_NAME));
 
