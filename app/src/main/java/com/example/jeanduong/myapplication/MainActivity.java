@@ -20,12 +20,14 @@ public class MainActivity extends AppCompatActivity {
     final static String LABEL_EXTRA_CAPTURED_BYTES = "CAPTURED_BYTES";
     final static String LABEL_EXTRA_CROPED_IMAGE = "CROPED_IMAGE";
 
-    final static int SNAPSHOT_REQUEST_CODE = 13;
-    final static int MUTILATION_REQUEST_CODE = 17;
+    final static int SNAPSHOT_REQUEST_CODE = 11;
+    final static int MUTILATION_REQUEST_CODE = 13;
+    final static int DISPLAY_REQUEST_CODE = 17;
 
     private static final String TAG = "Main activity"; // For log output
 
     final static String SNAPSHOT_FILE_NAME = Environment.getExternalStorageDirectory() + File.separator + "snapshot.jpg";
+    final static String ZOI_FILE_NAME = Environment.getExternalStorageDirectory() + File.separator + "zoi.jpg";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,9 +83,6 @@ public class MainActivity extends AppCompatActivity {
                             Log.d(TAG, "****** Array is null");
                         }
 
-
-
-
                     Intent itt_crop = new Intent(this, CropActivity.class);
                     itt_crop.putExtra(LABEL_EXTRA_CAPTURED_BYTES, data_intent.getByteArrayExtra(LABEL_EXTRA_CAPTURED_BYTES));
 
@@ -102,10 +101,6 @@ public class MainActivity extends AppCompatActivity {
                         else
                             Toast.makeText(this, "Cannot display!", Toast.LENGTH_LONG).show();
 */
-
-
-
-
                     } else
                     {
                         Toast.makeText(this, "Missing array of bytes in extra", Toast.LENGTH_LONG).show();
@@ -126,10 +121,12 @@ public class MainActivity extends AppCompatActivity {
         }
         else if (request_code == MUTILATION_REQUEST_CODE)
         {
-            if (data_intent != null)
-            {
-                croped_image = (Bitmap) (data_intent.getExtras()).get(LABEL_EXTRA_CROPED_IMAGE);
-            }
+            Log.e(TAG, "****** Crop detected");
+
+            Intent itt_display_zoi = new Intent(this, DisplayActivity.class);
+
+            //if (itt_display_zoi.resolveActivity(getPackageManager()) != null)
+            //    startActivity(itt_display_zoi);
         }
     }
 

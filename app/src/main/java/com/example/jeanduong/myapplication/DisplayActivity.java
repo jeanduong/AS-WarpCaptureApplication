@@ -1,5 +1,6 @@
 package com.example.jeanduong.myapplication;
 
+import android.app.Activity;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.support.v7.app.AppCompatActivity;
@@ -8,6 +9,9 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+
+import static java.lang.Math.max;
+import static java.lang.Math.min;
 
 public class DisplayActivity extends AppCompatActivity {
 
@@ -19,11 +23,9 @@ public class DisplayActivity extends AppCompatActivity {
         setContentView(R.layout.activity_display);
         ImageView iv = (ImageView) findViewById(R.id.vizualizer);
 
-
-        Bitmap bm = BitmapFactory.decodeFile(MainActivity.SNAPSHOT_FILE_NAME);
+        Bitmap bm = BitmapFactory.decodeFile(MainActivity.ZOI_FILE_NAME);
 
         iv.setImageBitmap(bm);
-
 
 /*
         if (this.getIntent().hasExtra(MainActivity.LABEL_EXTRA_CAPTURED_BYTES))
@@ -41,13 +43,17 @@ public class DisplayActivity extends AppCompatActivity {
             Log.e(TAG, "No array of bytes to build image");
         }
 */
-        ((Button) findViewById(R.id.close_display_button)).setOnClickListener(new View.OnClickListener()
-        {
+        ((Button) findViewById(R.id.close_display_button)).setOnClickListener(new View.OnClickListener() {
+
             @Override
             public void onClick(View v) {
+
                 finish();
             }
         });
+
+
+
 
     }
 }

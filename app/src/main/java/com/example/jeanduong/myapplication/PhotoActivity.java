@@ -282,11 +282,11 @@ public class PhotoActivity extends AppCompatActivity {
                 jpegSizes = characteristics.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP).getOutputSizes(ImageFormat.JPEG);
             }
 
-            // Default dimensions (if jpegSizes is null or void)
+            // Default dimensions (if jpegSizes is void or characteristics is null)
             int width = 640;
             int height = 480;
 
-            if ((jpegSizes != null) && (0 < jpegSizes.length)) {
+            if ((jpegSizes != null) && (jpegSizes.length > 0)) {
                 width = jpegSizes[0].getWidth();
                 height = jpegSizes[0].getHeight();
             }

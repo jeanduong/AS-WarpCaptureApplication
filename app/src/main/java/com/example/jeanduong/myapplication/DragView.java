@@ -1,6 +1,5 @@
 package com.example.jeanduong.myapplication;
 
-
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -19,8 +18,8 @@ public class DragView extends View {
     private Path ph = new Path();
     private int w;
     private int h;
-    private int x_1, x_2, x_3, x_4;
-    private int y_1, y_2, y_3, y_4;
+    protected int x_1, x_2, x_3, x_4;
+    protected int y_1, y_2, y_3, y_4;
     private boolean first_time_draw = true;
     int argmin = 1;
 
@@ -28,7 +27,7 @@ public class DragView extends View {
         super(context, attrs);
 
         pt.setAntiAlias(true);
-        pt.setStrokeWidth(1);
+        pt.setStrokeWidth(3);
         pt.setStyle(Paint.Style.STROKE);
         pt.setStrokeJoin(Paint.Join.ROUND);
     }
@@ -63,7 +62,7 @@ public class DragView extends View {
     }
 
     protected void drawVertices(Canvas cv){
-        pt.setColor(Color.BLACK);
+        pt.setColor(Color.RED);
         cv.drawCircle(x_1, y_1, 10, pt);
         cv.drawCircle(x_2, y_2, 10, pt);
         cv.drawCircle(x_3, y_3, 10, pt);
@@ -81,7 +80,7 @@ public class DragView extends View {
 
         pt.setColor(Color.MAGENTA);
         cv.drawRect(x_min, y_min, x_max, y_max, pt);
-        pt.setColor(Color.BLACK);
+        pt.setColor(Color.RED);
     }
 
     @Override
