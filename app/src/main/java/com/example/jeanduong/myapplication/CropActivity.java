@@ -19,7 +19,7 @@ import java.io.OutputStream;
 import static java.lang.Math.max;
 import static java.lang.Math.min;
 
-public class CropActivity extends AppCompatActivity {
+public class CropActivity extends Activity {
 
     private static final String TAG = "Crop activity"; // For log output
 

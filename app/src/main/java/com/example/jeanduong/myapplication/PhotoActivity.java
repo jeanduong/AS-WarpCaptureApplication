@@ -9,7 +9,9 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.ImageFormat;
+import android.graphics.Matrix;
 import android.graphics.Paint;
+import android.graphics.RectF;
 import android.graphics.SurfaceTexture;
 import android.hardware.camera2.CameraAccessException;
 import android.hardware.camera2.CameraCaptureSession;
@@ -52,7 +54,7 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
 
-public class PhotoActivity extends AppCompatActivity {
+public class PhotoActivity extends Activity {
     // Visible elements for UI
 
     private Button shutter_button;
@@ -82,6 +84,8 @@ public class PhotoActivity extends AppCompatActivity {
 
     // Image and file for save
     private Size image_dimension;
+    private int width; // width of the TextureView
+    private int height;
     private ImageReader image_reader;
     private File file;
 
@@ -197,6 +201,7 @@ public class PhotoActivity extends AppCompatActivity {
         @Override
         public void onSurfaceTextureAvailable(SurfaceTexture surface, int width, int height) {
             // Open your camera here
+
             openCamera();
         }
         @Override
@@ -313,12 +318,6 @@ public class PhotoActivity extends AppCompatActivity {
                     try {
                         image = reader.acquireLatestImage();
                         ByteBuffer bb = image.getPlanes()[0].getBuffer();
-                        /*
-                        byte[] bts = new byte[bb.capacity()];
-
-                        bb.get(bts);
-                        save(bts);
-                        */
 
                         image_arry_bytes = new byte[bb.capacity()];
 
@@ -333,79 +332,6 @@ public class PhotoActivity extends AppCompatActivity {
                             Log.e(TAG, "************ Image byte array is valid");
                             Log.e(TAG, "************ Size = " + image_arry_bytes.length);
                         }
-
-                        // See
-                        // http://stackoverflow.com/questions/26673127/android-imagereader-acquirelatestimage-returns-invalid-jpg
-                        // http://eazyprogramming.blogspot.fr/2013/01/passing-image-between-activities.html
-                        // http://www.jayrambhia.com/blog/pass-activity-bitmap
-
-                        /*
-                        // From http://stackoverflow.com/questions/32412197/how-to-create-bitmap-from-grayscaled-byte-buffer-image
-                        int w = image.getWidth();
-                        int h = image.getHeight();
-                        YuvImage yuvimage=new YuvImage(bts, ImageFormat.NV21, w, h, null);
-                        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                        yuvimage.compressToJpeg(new Rect(0, 0, w, h), 100, baos); // Where 100 is the quality of the generated jpeg
-                        byte[] jpegArray = baos.toByteArray();
-
-                        result_intent.putExtra(MainActivity.LABEL_EXTRA_CAPTURED_BYTES, jpegArray);
-                        */
-
-                        /*
-                        // From http://stackoverflow.com/questions/26673127/android-imagereader-acquirelatestimage-returns-invalid-jpg
-                        Bitmap bitmap = null;
-
-                        Image.Plane[] planes = image.getPlanes();
-                        if (planes[0].getBuffer() == null) {return;}
-                        int width = image.getWidth();
-                        int height = image.getHeight();
-                        int pixelStride = planes[0].getPixelStride();
-                        int rowStride = planes[0].getRowStride();
-                        int rowPadding = rowStride - pixelStride * width;
-                        byte[] newData = new byte[width * height * 4];
-
-                        int offset = 0;
-                        bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
-                        ByteBuffer buffer = planes[0].getBuffer();
-                        for (int i = 0; i < height; ++i) {
-                            for (int j = 0; j < width; ++j) {
-                                int pixel = 0;
-                                pixel |= (buffer.get(offset) & 0xff) << 16;     // R
-                                pixel |= (buffer.get(offset + 1) & 0xff) << 8;  // G
-                                pixel |= (buffer.get(offset + 2) & 0xff);       // B
-                                pixel |= (buffer.get(offset + 3) & 0xff) << 24; // A
-                                bitmap.setPixel(j, i, pixel);
-                                offset += pixelStride;
-                            }
-                            offset += rowPadding;
-                        }
-
-                        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
-
-                        result_intent.putExtra(MainActivity.LABEL_EXTRA_CAPTURED_BYTES, baos.toByteArray());
-                        */
-
-                        /*
-                        final Image.Plane[] planes = image.getPlanes();
-                        final Buffer buffer = planes[0].getBuffer().rewind();
-                        int mWidth = image.getWidth();
-                        int mHeight = image.getHeight();
-                        int pixelStride = planes[0].getPixelStride();
-                        int rowStride = planes[0].getRowStride();
-                        int rowPadding = rowStride - pixelStride * mWidth;
-
-                        Bitmap bitmap = Bitmap.createBitmap(mWidth, mHeight, Bitmap.Config.ARGB_8888);
-                        bitmap.copyPixelsFromBuffer(buffer);
-                        image.close();
-
-                        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                        bitmap.compress(Bitmap.CompressFormat.PNG, 100, baos);
-                        byte[] b = baos.toByteArray();
-
-                        result_intent.putExtra(MainActivity.LABEL_EXTRA_CAPTURED_BYTES, b);
-                        */
-
                     }
                     catch (FileNotFoundException e) {e.printStackTrace();}
                     catch (IOException e) {e.printStackTrace();}
@@ -455,6 +381,11 @@ public class PhotoActivity extends AppCompatActivity {
             texture.setDefaultBufferSize(image_dimension.getWidth(), image_dimension.getHeight());
             Surface surface = new Surface(texture);
             capture_request_builder = camera_device.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW);
+
+
+
+
+
             capture_request_builder.addTarget(surface);
 
             camera_device.createCaptureSession(Arrays.asList(surface), new CameraCaptureSession.StateCallback(){

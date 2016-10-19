@@ -12,7 +12,7 @@ import android.widget.Toast;
 
 import java.io.File;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends Activity {
 
     Bitmap croped_image;
     String storage_location = Environment.getExternalStorageDirectory().toString();

@@ -13,7 +13,7 @@ import android.widget.ImageView;
 import static java.lang.Math.max;
 import static java.lang.Math.min;
 
-public class DisplayActivity extends AppCompatActivity {
+public class DisplayActivity extends Activity {
 
     private static final String TAG = "Display activity"; // For log output
 

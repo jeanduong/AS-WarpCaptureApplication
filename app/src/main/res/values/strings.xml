@@ -16,6 +16,6 @@
         aeternum hoc sanctae foedus amicitiae.</string>
     <string name="shutter_button_label">Snap</string>
     <string name="crop_button_label">Crop</string>
-    <string name="reshoot_button_label">Redo snap</string>
+    <string name="reshoot_button_label">Resnap</string>
     <string name="close_display_button_label">Close display</string>
 </resources>

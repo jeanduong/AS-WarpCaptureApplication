@@ -3,8 +3,9 @@ package com.example.jeanduong.myapplication;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.app.Activity;
 
-public class HelpActivity extends AppCompatActivity {
+public class HelpActivity extends Activity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
