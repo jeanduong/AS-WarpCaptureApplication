@@ -10,16 +10,25 @@ import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.util.Xml;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
+import android.widget.Toast;
+
+import org.xmlpull.v1.XmlSerializer;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.StringWriter;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 
 import static java.lang.Math.max;
 import static java.lang.Math.min;
@@ -86,28 +95,32 @@ public class CropActivity extends Activity {
                 int new_y_4 = (int)(y_4 / (float)drag_layer.getHeight() * bm.getWidth() * aspectRatioH) - (int)(top * bm.getWidth() * aspectRatioH);
                 new_y_4 = min(new_y_4, height - 1);
 
+                Calendar cal = Calendar.getInstance();
+                SimpleDateFormat simple_format = new SimpleDateFormat("yyyy-MM-dd_HH:mm:ss");
+                Date present = cal.getTime();
+                String str_date = simple_format.format(present);
 
-
-
-
+                String data_points = writeXml(new_x_1, new_y_1, new_x_2, new_y_2, new_x_3, new_y_3, new_x_4, new_y_4);
 
                 try {
-                    FileOutputStream output = new FileOutputStream(MainActivity.ZOI_FILE_NAME);
-                    targetBitmap.compress(Bitmap.CompressFormat.JPEG, 100, output);
-                    output.flush();
-                    output.close();
+                    FileOutputStream output_img = new FileOutputStream(MainActivity.ROOT_FILE_NAME + str_date + ".jpg");
+                    targetBitmap.compress(Bitmap.CompressFormat.JPEG, 100, output_img);
+                    output_img.flush();
+                    output_img.close();
+
+                    FileOutputStream output_xml = new FileOutputStream(MainActivity.ROOT_FILE_NAME + str_date + ".xml");
+                    output_xml.write(data_points.getBytes());
+                    output_xml.flush();
+                    output_xml.close();
+
+                    File tmp = new File(MainActivity.SNAPSHOT_FILE_NAME);
+                    tmp.deleteOnExit();
+
+                    Toast.makeText(CropActivity.this, "Data saved at " + str_date , Toast.LENGTH_SHORT).show();
                 }
                 catch (Exception e) {
                     Log.d(TAG, "Failed to save image");
-                } finally {
-                    File tmp = new File(MainActivity.ZOI_FILE_NAME);
-                    if (tmp.exists()) {
-                        Intent intent = new Intent();
-                        intent.setAction(Intent.ACTION_VIEW);
-                        intent.setDataAndType(Uri.parse("file://" + MainActivity.ZOI_FILE_NAME), "image/*");
-                        startActivity(intent);
                     }
-                }
 
                 Intent result_intent = new Intent();
 
@@ -121,11 +134,50 @@ public class CropActivity extends Activity {
                 finish();
             }
         });
-
-
-
     }
 
+    private String writeXml(int x1, int y1, int x2, int y2,
+                            int x3, int y3, int x4, int y4) {
+        XmlSerializer serializer = Xml.newSerializer();
+        StringWriter writer = new StringWriter();
+        try {
+            serializer.setOutput(writer);
+            serializer.startDocument("UTF-8", true);
+            //<controlPoint xcoord=100 ycoord=100 label="topleft"/>
 
+            serializer.startTag("", "Quadrilateral");
+
+            serializer.startTag("", "controlPoint");
+            serializer.attribute("", "xcoord", Integer.toString(x1));
+            serializer.attribute("", "ycoord", Integer.toString(y1));
+            serializer.attribute("", "label", "topleft");
+            serializer.endTag("", "controlPoint");
+
+            serializer.startTag("", "controlPoint");
+            serializer.attribute("", "xcoord", Integer.toString(x2));
+            serializer.attribute("", "ycoord", Integer.toString(y2));
+            serializer.attribute("", "label", "topright");
+            serializer.endTag("", "controlPoint");
+
+            serializer.startTag("", "controlPoint");
+            serializer.attribute("", "xcoord", Integer.toString(x3));
+            serializer.attribute("", "ycoord", Integer.toString(y3));
+            serializer.attribute("", "label", "bottomright");
+            serializer.endTag("", "controlPoint");
+
+            serializer.startTag("", "controlPoint");
+            serializer.attribute("", "xcoord", Integer.toString(x4));
+            serializer.attribute("", "ycoord", Integer.toString(y4));
+            serializer.attribute("", "label", "bottomleft");
+            serializer.endTag("", "controlPoint");
+
+            serializer.endTag("", "Quadrilateral");
+
+            serializer.endDocument();
+            return writer.toString();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
 
 }

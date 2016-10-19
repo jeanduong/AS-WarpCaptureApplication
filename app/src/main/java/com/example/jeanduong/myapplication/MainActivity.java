@@ -28,6 +28,7 @@ public class MainActivity extends Activity {
 
     final static String SNAPSHOT_FILE_NAME = Environment.getExternalStorageDirectory() + File.separator + "snapshot.jpg";
     final static String ZOI_FILE_NAME = Environment.getExternalStorageDirectory() + File.separator + "zoi.jpg";
+    final static String ROOT_FILE_NAME = Environment.getExternalStorageDirectory() + File.separator;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

@@ -16,6 +16,8 @@ import static java.lang.Math.pow;
 public class DragView extends View {
     private Paint pt = new Paint();
     private Path ph = new Path();
+    private Paint paintFill = new Paint();
+
     private int w;
     private int h;
     protected int x_1, x_2, x_3, x_4;
@@ -30,6 +32,10 @@ public class DragView extends View {
         pt.setStrokeWidth(3);
         pt.setStyle(Paint.Style.STROKE);
         pt.setStrokeJoin(Paint.Join.ROUND);
+
+        paintFill.setColor(Color.argb(200, 0, 0, 0));
+        paintFill.setStyle(Paint.Style.FILL);
+
     }
 
     @Override
@@ -52,13 +58,29 @@ public class DragView extends View {
         }
 
         drawVertices(cv);
-
+        drawBorders(cv);
         cv.drawPath( ph, pt);
     }
 
     protected void onSizeChanged(){
         w = getWidth();
         h = getHeight();
+    }
+
+    protected void drawBorders(Canvas cv) {
+        //Draw cut area
+        int Ax = min(x_1, x_4);
+        int Bx = max(x_2, x_3);
+        int Ay = min(y_1, y_2);
+        int By = max(y_3, y_4);
+        //Top
+        cv.drawRect(Ax,0, Bx, Ay, paintFill);
+        //Left
+        cv.drawRect(0, 0, Ax, getBottom(), paintFill);
+        //Right
+        cv.drawRect(Bx, 0, getRight(), getBottom(), paintFill);
+        //Bottom
+        cv.drawRect(Ax, By, Bx, getBottom(), paintFill);
     }
 
     protected void drawVertices(Canvas cv){
