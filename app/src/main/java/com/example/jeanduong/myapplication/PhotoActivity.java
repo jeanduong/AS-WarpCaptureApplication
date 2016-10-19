@@ -72,6 +72,7 @@ public class PhotoActivity extends Activity {
     protected CaptureRequest.Builder capture_request_builder;
     private static final int REQUEST_CAMERA_PERMISSION = 200;
     private boolean flash_supported;
+    protected Surface surface;
 
     private static final SparseIntArray ORIENTATIONS = new SparseIntArray();
 
@@ -202,7 +203,7 @@ public class PhotoActivity extends Activity {
         public void onSurfaceTextureAvailable(SurfaceTexture surface, int width, int height) {
             // Open your camera here
 
-            openCamera();
+            openCamera(width, height);
         }
         @Override
         public void onSurfaceTextureSizeChanged(SurfaceTexture surface, int width, int height) {
@@ -225,7 +226,26 @@ public class PhotoActivity extends Activity {
             //This is called when the camera is open
             Log.v(TAG, "onOpened");
             camera_device = camera;
-            createCameraPreview();
+            try {
+                capture_request_builder = camera_device.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW);
+                capture_request_builder.addTarget(surface);
+                camera_device.createCaptureSession(Arrays.asList(surface), new CameraCaptureSession.StateCallback(){
+                    @Override
+                    public void onConfigured(@NonNull CameraCaptureSession cameraCaptureSession) {
+                        //The camera is already closed
+                        if (camera_device == null) {return;}
+                        // When the session is ready, we start displaying the preview.
+                        camera_capture_sessions = cameraCaptureSession;
+                        updatePreview();
+                    }
+
+                    @Override
+                    public void onConfigureFailed(@NonNull CameraCaptureSession cameraCaptureSession) {
+                        Toast.makeText(PhotoActivity.this, "Configuration change", Toast.LENGTH_SHORT).show();
+                    }
+                }, null);            } catch (CameraAccessException e) {
+                e.printStackTrace();
+            }
         }
 
         @Override
@@ -241,14 +261,14 @@ public class PhotoActivity extends Activity {
     };
 
     // Callback for capture session
-
+/*
     final CameraCaptureSession.CaptureCallback captureCallbackListener = new CameraCaptureSession.CaptureCallback() {
         @Override
         public void onCaptureCompleted(CameraCaptureSession session, CaptureRequest request, TotalCaptureResult result) {
             super.onCaptureCompleted(session, request, result);
             createCameraPreview();
         }
-    };
+    };*/
 
     // Background thread to prevent application from freezing
 
@@ -304,10 +324,6 @@ public class PhotoActivity extends Activity {
             captureBuilder.addTarget(reader.getSurface());
             captureBuilder.set(CaptureRequest.CONTROL_MODE, CameraMetadata.CONTROL_MODE_AUTO);
 
-            // Orientation
-            int rotation = getWindowManager().getDefaultDisplay().getRotation();
-            captureBuilder.set(CaptureRequest.JPEG_ORIENTATION, ORIENTATIONS.get(rotation));
-
             //final File file = new File(Environment.getExternalStorageDirectory() + "/pic.jpg");
             final File file = new File(MainActivity.SNAPSHOT_FILE_NAME);
 
@@ -356,7 +372,7 @@ public class PhotoActivity extends Activity {
                 @Override
                 public void onCaptureCompleted(CameraCaptureSession session, CaptureRequest request, TotalCaptureResult result) {
                     super.onCaptureCompleted(session, request, result);
-                    createCameraPreview();
+//                    createCameraPreview();
                 }
             };
 
@@ -374,40 +390,29 @@ public class PhotoActivity extends Activity {
 
     // Create a preview to display what the camera is staring at
 
-    protected void createCameraPreview() {
-        try {
+    protected void createCameraPreview(int width, int height) {
             SurfaceTexture texture = preview_area.getSurfaceTexture();
             assert texture != null;
             texture.setDefaultBufferSize(image_dimension.getWidth(), image_dimension.getHeight());
-            Surface surface = new Surface(texture);
-            capture_request_builder = camera_device.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW);
+            surface = new Surface(texture);
 
-
-
-
-
-            capture_request_builder.addTarget(surface);
-
-            camera_device.createCaptureSession(Arrays.asList(surface), new CameraCaptureSession.StateCallback(){
-                @Override
-                public void onConfigured(@NonNull CameraCaptureSession cameraCaptureSession) {
-                    //The camera is already closed
-                    if (camera_device == null) {return;}
-                    // When the session is ready, we start displaying the preview.
-                    camera_capture_sessions = cameraCaptureSession;
-                    updatePreview();
-                }
-
-                @Override
-                public void onConfigureFailed(@NonNull CameraCaptureSession cameraCaptureSession) {
-                    Toast.makeText(PhotoActivity.this, "Configuration change", Toast.LENGTH_SHORT).show();
-                }
-            }, null);
-        }
-        catch (CameraAccessException e) {e.printStackTrace();}
+            // Create a matrix for rotation
+            Matrix matrix = new Matrix();
+            RectF viewRect = new RectF(0, 0, width, height);
+            RectF bufferRect = new RectF(0, 0, image_dimension.getHeight(), image_dimension.getWidth());
+            bufferRect.offset(viewRect.centerX() - bufferRect.centerX(), viewRect.centerY() - bufferRect.centerY());
+            matrix.setRectToRect(viewRect, bufferRect, Matrix.ScaleToFit.FILL);
+            float scale = Math.max(
+                    (float) height / image_dimension.getHeight(),
+                    (float) width / image_dimension.getWidth());
+            //anti-stretching
+            matrix.postScale(scale, scale, viewRect.centerX(), viewRect.centerY());
+            //rotation of the view
+            matrix.postRotate(-90, viewRect.centerX(), viewRect.centerY());
+            preview_area.setTransform(matrix);
     }
 
-    private void openCamera() {
+    private void openCamera(int width, int height) {
         CameraManager manager = (CameraManager) getSystemService(Context.CAMERA_SERVICE);
         Log.v(TAG, "is camera open");
 
@@ -427,7 +432,7 @@ public class PhotoActivity extends Activity {
             }
 
             //Log.e(TAG, "camera id = " + camera_Id);
-
+            createCameraPreview(width, height);
             manager.openCamera(camera_Id, stateCallback, null);
         } catch (CameraAccessException e) {e.printStackTrace();}
 
@@ -472,13 +477,13 @@ public class PhotoActivity extends Activity {
         Log.v(TAG, "onResume");
         startBackgroundThread();
 
-        if (preview_area.isAvailable()) {
+/*        if (preview_area.isAvailable()) {
             Log.v(TAG, "preview area available");
             openCamera();
-        } else {
+        } else {*/
             Log.v(TAG, "preview area to be prepared");
             preview_area.setSurfaceTextureListener(textureListener);
-        }
+//        }
     }
 
     @Override

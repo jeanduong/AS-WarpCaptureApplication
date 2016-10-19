@@ -2,6 +2,11 @@ package com.example.jeanduong.myapplication;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.net.Uri;
+import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -32,16 +37,10 @@ public class CropActivity extends Activity {
         final DragView drag_layer = (DragView) findViewById(R.id.drag_view);
 
         // Load image from file
-        Bitmap bm = BitmapFactory.decodeFile(MainActivity.SNAPSHOT_FILE_NAME);
-
-        // Perform rotation
-        Matrix mt = new Matrix();
-        mt.postRotate(90);
-
-        final Bitmap rotated_bm = Bitmap.createBitmap(bm , 0, 0, bm.getWidth(), bm.getHeight(), mt, true);
+        final Bitmap bm = BitmapFactory.decodeFile(MainActivity.SNAPSHOT_FILE_NAME);
 
         // Set for display
-        snapshot_layer.setImageBitmap(rotated_bm);
+        snapshot_layer.setImageBitmap(bm);
 
         ((Button) findViewById(R.id.crop_button)).setOnClickListener(new View.OnClickListener() {
 
@@ -53,35 +52,61 @@ public class CropActivity extends Activity {
                 int y_1 = drag_layer.y_1, y_2 = drag_layer.y_2;
                 int y_3 = drag_layer.y_3, y_4 = drag_layer.y_4;
 
-                double scale_x = rotated_bm.getWidth() / snapshot_layer.getWidth();
-                double scale_y = rotated_bm.getHeight() / snapshot_layer.getHeight();
+                float aspectRatioH = (float)drag_layer.getHeight() / (float)drag_layer.getWidth();
+                //
+                float heighDiff = bm.getHeight() - bm.getWidth() * aspectRatioH;
+                //Convert pixel to percent
+                float left = min(x_1, x_4) / (float)drag_layer.getWidth();
+                float top = min(y_1, y_2) / (float)drag_layer.getHeight();
+                float right = max(x_2, x_3) / (float)drag_layer.getWidth();
+                float bottom = max(y_3, y_4) / (float)drag_layer.getHeight();
 
-                Log.e(TAG, "Bitmap width  = " + rotated_bm.getWidth() + " | View width  = " + snapshot_layer.getWidth());
-                Log.e(TAG, "Bitmap height = " + rotated_bm.getHeight() + " | View height = " + snapshot_layer.getHeight());
+                int x = (int)(left * bm.getWidth());
+                int width = (int)((right - left) * bm.getWidth());
+                int y = (int)(heighDiff / 2f) + (int)(top * bm.getWidth() * aspectRatioH);
+                int height = (int)((bottom - top) * bm.getWidth() * aspectRatioH);
 
-                int x_min = min(x_1, x_4);
-                int x_max = max(x_2, x_3);
-                int y_min = min(y_1, y_2);
-                int y_max = max(y_3, y_4);
+                Bitmap targetBitmap =  Bitmap.createBitmap(bm, x, y, width, height);
 
-                double target_width = x_max - x_min + 1.0;
-                double target_height = y_max - y_min + 1.0;
+                int new_x_1 = (int)(x_1 / (float)drag_layer.getWidth() * bm.getWidth()) - x;
+                new_x_1 = max(0, new_x_1);
+                int new_x_2 = (int)(x_2 / (float)drag_layer.getWidth() * bm.getWidth()) - x;
+                new_x_2 = min(new_x_2, width - 1);
+                int new_x_3 = (int)(x_3 / (float)drag_layer.getWidth() * bm.getWidth()) - x;
+                new_x_3 = min(new_x_3, width - 1);
+                int new_x_4 = (int)(x_4 / (float)drag_layer.getWidth() * bm.getWidth()) - x;
+                new_x_4 = max(0, new_x_4);
 
-                Bitmap targetBitmap = Bitmap.createBitmap(rotated_bm, (int) (x_min * scale_x),
-                        (int)(y_min * scale_y), (int)(target_width * scale_x), (int)(target_height * scale_y));
+                int new_y_1 = (int)(y_1 / (float)drag_layer.getHeight() * bm.getWidth() * aspectRatioH) - (int)(top * bm.getWidth() * aspectRatioH);
+                new_y_1 = max(0, new_y_1);
+                int new_y_2 = (int)(y_2 / (float)drag_layer.getHeight() * bm.getWidth() * aspectRatioH) - (int)(top * bm.getWidth() * aspectRatioH);
+                new_y_2 = max(0, new_y_2);
+                int new_y_3 = (int)(y_3 / (float)drag_layer.getHeight() * bm.getWidth() * aspectRatioH) - (int)(top * bm.getWidth() * aspectRatioH);
+                new_y_3 = min(new_y_3, height - 1);
+                int new_y_4 = (int)(y_4 / (float)drag_layer.getHeight() * bm.getWidth() * aspectRatioH) - (int)(top * bm.getWidth() * aspectRatioH);
+                new_y_4 = min(new_y_4, height - 1);
+
+
+
+
+
 
                 try {
-                    final File file = new File(MainActivity.ZOI_FILE_NAME);
-
-                    OutputStream fOut = null;
-
-                    // 100 means no compression, the lower you go, the stronger the compression
-                    targetBitmap.compress(Bitmap.CompressFormat.PNG, 100, fOut);
-                    fOut.flush();
-                    fOut.close();
+                    FileOutputStream output = new FileOutputStream(MainActivity.ZOI_FILE_NAME);
+                    targetBitmap.compress(Bitmap.CompressFormat.JPEG, 100, output);
+                    output.flush();
+                    output.close();
                 }
                 catch (Exception e) {
                     Log.d(TAG, "Failed to save image");
+                } finally {
+                    File tmp = new File(MainActivity.ZOI_FILE_NAME);
+                    if (tmp.exists()) {
+                        Intent intent = new Intent();
+                        intent.setAction(Intent.ACTION_VIEW);
+                        intent.setDataAndType(Uri.parse("file://" + MainActivity.ZOI_FILE_NAME), "image/*");
+                        startActivity(intent);
+                    }
                 }
 
                 Intent result_intent = new Intent();
