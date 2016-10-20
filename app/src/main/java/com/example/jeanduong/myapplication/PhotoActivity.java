@@ -459,7 +459,7 @@ public class PhotoActivity extends Activity {
             image_reader = null;
         }
     }
-
+/*
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         if (requestCode == REQUEST_CAMERA_PERMISSION) {
@@ -470,7 +470,7 @@ public class PhotoActivity extends Activity {
             }
         }
     }
-
+*/
     @Override
     protected void onResume() {
         super.onResume();
