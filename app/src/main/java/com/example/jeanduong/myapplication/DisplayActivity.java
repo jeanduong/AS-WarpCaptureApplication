@@ -26,23 +26,7 @@ public class DisplayActivity extends Activity {
         Bitmap bm = BitmapFactory.decodeFile(MainActivity.ZOI_FILE_NAME);
 
         iv.setImageBitmap(bm);
-
-/*
-        if (this.getIntent().hasExtra(MainActivity.LABEL_EXTRA_CAPTURED_BYTES))
-        {
-            Log.d(TAG, "Array of bytes found");
-            Log.d(TAG, "Data length = " + this.getIntent().getByteArrayExtra(MainActivity.LABEL_EXTRA_CAPTURED_BYTES).length);
-
-            byte[] data = this.getIntent().getByteArrayExtra(MainActivity.LABEL_EXTRA_CAPTURED_BYTES);
-            Bitmap bm = BitmapFactory.decodeByteArray(data, 0, data.length);
-
-            iv.setImageBitmap(bm);
-        }
-        else
-        {
-            Log.e(TAG, "No array of bytes to build image");
-        }
-*/
+        
         ((Button) findViewById(R.id.close_display_button)).setOnClickListener(new View.OnClickListener() {
 
             @Override
