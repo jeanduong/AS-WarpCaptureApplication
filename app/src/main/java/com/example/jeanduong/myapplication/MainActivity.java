@@ -64,55 +64,13 @@ public class MainActivity extends Activity {
 
         if (request_code == SNAPSHOT_REQUEST_CODE)
         {
-            Log.d(TAG, "****** Result code   : " + result_code);
-            Log.d(TAG, "****** Expected code : " + Activity.RESULT_OK);
-
             if (result_code == Activity.RESULT_OK)
             {
-                if (data_intent.getExtras() != null)
-                {
-                    if (data_intent.hasExtra(LABEL_EXTRA_CAPTURED_BYTES))
-                    {
-                        Log.d(TAG, "****** Array of bytes available in extra");
+                Intent itt_crop = new Intent(this, CropActivity.class);
+                itt_crop.putExtra(LABEL_EXTRA_CAPTURED_BYTES, data_intent.getByteArrayExtra(LABEL_EXTRA_CAPTURED_BYTES));
 
-                        if (data_intent.getByteArrayExtra(LABEL_EXTRA_CAPTURED_BYTES) != null)
-                        {
-                            Log.d(TAG, "****** Array is not null");
-                        }
-                        else
-                        {
-                            Log.d(TAG, "****** Array is null");
-                        }
-
-                    Intent itt_crop = new Intent(this, CropActivity.class);
-                    itt_crop.putExtra(LABEL_EXTRA_CAPTURED_BYTES, data_intent.getByteArrayExtra(LABEL_EXTRA_CAPTURED_BYTES));
-
-                     if (itt_crop.resolveActivity(getPackageManager()) != null)
-                        startActivityForResult(itt_crop, MUTILATION_REQUEST_CODE);
-                     else
-                         Toast.makeText(this, "Error: No image recorded", Toast.LENGTH_LONG).show();
-
-/*
-                        Intent itt = new Intent(this, DisplayActivity.class);
-                        itt.putExtra(LABEL_EXTRA_CAPTURED_BYTES, data_intent.getByteArrayExtra(LABEL_EXTRA_CAPTURED_BYTES));
-
-                        // Verify the intent will resolve to at least one activity
-                        if (itt.resolveActivity(getPackageManager()) != null)
-                            startActivity(itt);
-                        else
-                            Toast.makeText(this, "Cannot display!", Toast.LENGTH_LONG).show();
-*/
-                    } else
-                    {
-                        Toast.makeText(this, "Missing array of bytes in extra", Toast.LENGTH_LONG).show();
-                        Log.e(TAG, "****** Missing array of bytes in extra");
-                    }
-                }
-                else
-                {
-                    Toast.makeText(this, "Void result bundle", Toast.LENGTH_LONG).show();
-                    Log.e(TAG, "****** Void result bundle");
-                }
+                if (itt_crop.resolveActivity(getPackageManager()) != null)
+                    startActivityForResult(itt_crop, MUTILATION_REQUEST_CODE);
             }
             else
             {
@@ -122,12 +80,12 @@ public class MainActivity extends Activity {
         }
         else if (request_code == MUTILATION_REQUEST_CODE)
         {
-            Log.e(TAG, "****** Crop detected");
+            Log.e(TAG, "****** Crop done");
 
             Intent itt_display_zoi = new Intent(this, DisplayActivity.class);
 
-            //if (itt_display_zoi.resolveActivity(getPackageManager()) != null)
-            //    startActivity(itt_display_zoi);
+            if (itt_display_zoi.resolveActivity(getPackageManager()) != null)
+                startActivity(itt_display_zoi);
         }
     }
 

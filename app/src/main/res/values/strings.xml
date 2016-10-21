@@ -3,10 +3,10 @@
     <string name="quit_button_label">Quit</string>
     <string name="start_button_label">Start</string>
     <string name="help_button_label">Help</string>
-    <string name="help_verbose">On placera ici un texte expliquant les fonctionnalités de l\'application quand elle sera complète.
+    <string name="help_verbose">A user guide will be placed here when stable version will be available.
     </string>
     <string name="verbose_done_button_label">Done</string>
-    <string name="introduction_verbose">Numéro de version, copyright, et autres éléments légaux.
+    <string name="introduction_verbose">Version numbers, copyrights and other disclaimers to be placed here.
     </string>
     <string name="shutter_button_label">Snap</string>
     <string name="crop_button_label">Crop</string>

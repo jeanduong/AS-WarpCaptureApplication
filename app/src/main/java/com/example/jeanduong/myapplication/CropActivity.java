@@ -2,12 +2,6 @@ package com.example.jeanduong.myapplication;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Paint;
-import android.net.Uri;
-import android.os.Environment;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.util.Xml;
@@ -16,16 +10,15 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Matrix;
 import android.widget.Toast;
 
 import org.xmlpull.v1.XmlSerializer;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.io.StringWriter;
+import java.nio.channels.FileChannel;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -116,10 +109,19 @@ public class CropActivity extends Activity {
                     File tmp = new File(MainActivity.SNAPSHOT_FILE_NAME);
                     tmp.deleteOnExit();
 
+                    // Duplicate in ZOI image file
+                    FileInputStream fis = new FileInputStream(new File(MainActivity.ROOT_FILE_NAME + str_date + ".jpg"));
+                    FileOutputStream fos = new FileOutputStream(new File(MainActivity.ZOI_FILE_NAME));
+                    FileChannel fic = fis.getChannel();
+                    FileChannel foc = fos.getChannel();
+                    fic.transferTo(0, fic.size(), foc);
+                    fis.close();
+                    fos.close();
+
                     Toast.makeText(CropActivity.this, "Data saved at " + str_date , Toast.LENGTH_SHORT).show();
                 }
                 catch (Exception e) {
-                    Log.d(TAG, "Failed to save image");
+                    Log.e(TAG, "Failed to save image");
                     }
 
                 Intent result_intent = new Intent();
@@ -143,33 +145,32 @@ public class CropActivity extends Activity {
         try {
             serializer.setOutput(writer);
             serializer.startDocument("UTF-8", true);
-            //<controlPoint xcoord=100 ycoord=100 label="topleft"/>
 
             serializer.startTag("", "Quadrilateral");
 
-            serializer.startTag("", "controlPoint");
+            serializer.startTag("", "ControlPoint");
             serializer.attribute("", "xcoord", Integer.toString(x1));
             serializer.attribute("", "ycoord", Integer.toString(y1));
             serializer.attribute("", "label", "topleft");
-            serializer.endTag("", "controlPoint");
+            serializer.endTag("", "ControlPoint");
 
-            serializer.startTag("", "controlPoint");
+            serializer.startTag("", "ControlPoint");
             serializer.attribute("", "xcoord", Integer.toString(x2));
             serializer.attribute("", "ycoord", Integer.toString(y2));
             serializer.attribute("", "label", "topright");
-            serializer.endTag("", "controlPoint");
+            serializer.endTag("", "ControlPoint");
 
-            serializer.startTag("", "controlPoint");
+            serializer.startTag("", "ControlPoint");
             serializer.attribute("", "xcoord", Integer.toString(x3));
             serializer.attribute("", "ycoord", Integer.toString(y3));
             serializer.attribute("", "label", "bottomright");
-            serializer.endTag("", "controlPoint");
+            serializer.endTag("", "ControlPoint");
 
-            serializer.startTag("", "controlPoint");
+            serializer.startTag("", "ControlPoint");
             serializer.attribute("", "xcoord", Integer.toString(x4));
             serializer.attribute("", "ycoord", Integer.toString(y4));
             serializer.attribute("", "label", "bottomleft");
-            serializer.endTag("", "controlPoint");
+            serializer.endTag("", "ControlPoint");
 
             serializer.endTag("", "Quadrilateral");
 

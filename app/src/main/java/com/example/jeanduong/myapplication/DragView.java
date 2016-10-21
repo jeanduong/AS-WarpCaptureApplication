@@ -33,9 +33,8 @@ public class DragView extends View {
         pt.setStyle(Paint.Style.STROKE);
         pt.setStrokeJoin(Paint.Join.ROUND);
 
-        paintFill.setColor(Color.argb(200, 0, 0, 0));
+        paintFill.setColor(Color.argb(150, 0, 0, 0));
         paintFill.setStyle(Paint.Style.FILL);
-
     }
 
     @Override
@@ -59,7 +58,7 @@ public class DragView extends View {
 
         drawVertices(cv);
         drawBorders(cv);
-        cv.drawPath( ph, pt);
+        cv.drawPath(ph, pt);
     }
 
     protected void onSizeChanged(){
@@ -73,14 +72,11 @@ public class DragView extends View {
         int Bx = max(x_2, x_3);
         int Ay = min(y_1, y_2);
         int By = max(y_3, y_4);
-        //Top
-        cv.drawRect(Ax,0, Bx, Ay, paintFill);
-        //Left
-        cv.drawRect(0, 0, Ax, getBottom(), paintFill);
-        //Right
-        cv.drawRect(Bx, 0, getRight(), getBottom(), paintFill);
-        //Bottom
-        cv.drawRect(Ax, By, Bx, getBottom(), paintFill);
+
+        cv.drawRect(Ax,0, Bx, Ay, paintFill);//Top
+        cv.drawRect(0, 0, Ax, getBottom(), paintFill);//Left
+        cv.drawRect(Bx, 0, getRight(), getBottom(), paintFill);//Right
+        cv.drawRect(Ax, By, Bx, getBottom(), paintFill);//Bottom
     }
 
     protected void drawVertices(Canvas cv){
@@ -212,18 +208,21 @@ public class DragView extends View {
         y_bk = -y_fd;
         x_fd = x_3 - x_2;
         y_fd = y_3 - y_2;
+
         if (det(x_bk, y_bk, x_fd, y_fd) > 0) return false;
 
         x_bk = -x_fd;
         y_bk = -y_fd;
         x_fd = x_4 - x_3;
         y_fd = y_4 - y_3;
+
         if (det(x_bk, y_bk, x_fd, y_fd) > 0) return false;
 
         x_bk = -x_fd;
         y_bk = -y_fd;
         x_fd = x_1 - x_4;
         y_fd = y_1 - y_4;
+
         if (det(x_bk, y_bk, x_fd, y_fd) > 0) return false;
 
         return true;
