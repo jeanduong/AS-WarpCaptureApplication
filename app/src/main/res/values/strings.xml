@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">SNCF capture</string>
+    <string name="app_name">Text zone capture</string>
     <string name="quit_button_label">Quit</string>
     <string name="start_button_label">Start</string>
     <string name="help_button_label">Help</string>
