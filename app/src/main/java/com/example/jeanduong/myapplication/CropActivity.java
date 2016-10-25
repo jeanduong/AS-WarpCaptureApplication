@@ -44,7 +44,7 @@ public class CropActivity extends Activity {
         // Set for display
         snapshot_layer.setImageBitmap(bm);
 
-        ((Button) findViewById(R.id.reshoot_button)).setOnClickListener(new View.OnClickListener() {
+        (findViewById(R.id.reshoot_button)).setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View v) {
@@ -61,13 +61,7 @@ public class CropActivity extends Activity {
             }
         });
 
-
-
-
-
-
-
-        ((Button) findViewById(R.id.crop_button)).setOnClickListener(new View.OnClickListener() {
+        (findViewById(R.id.crop_button)).setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View v) {
@@ -161,8 +155,7 @@ public class CropActivity extends Activity {
         });
     }
 
-    private String writeXml(int x1, int y1, int x2, int y2,
-                            int x3, int y3, int x4, int y4) {
+    private String writeXml(int x1, int y1, int x2, int y2, int x3, int y3, int x4, int y4) {
         XmlSerializer serializer = Xml.newSerializer();
         StringWriter writer = new StringWriter();
         try {

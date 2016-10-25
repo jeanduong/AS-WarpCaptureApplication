@@ -35,6 +35,8 @@ public class DragView extends View {
 
         paintFill.setColor(Color.argb(150, 0, 0, 0));
         paintFill.setStyle(Paint.Style.FILL);
+
+        setBackgroundColor(Color.TRANSPARENT);
     }
 
     @Override

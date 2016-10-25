@@ -3,6 +3,7 @@ package com.example.jeanduong.myapplication;
 import android.app.Activity;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -25,9 +26,10 @@ public class DisplayActivity extends Activity {
 
         Bitmap bm = BitmapFactory.decodeFile(MainActivity.ZOI_FILE_NAME);
 
+        iv.setBackgroundColor(Color.BLACK);
         iv.setImageBitmap(bm);
         
-        ((Button) findViewById(R.id.close_display_button)).setOnClickListener(new View.OnClickListener() {
+        (findViewById(R.id.close_display_button)).setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View v) {
