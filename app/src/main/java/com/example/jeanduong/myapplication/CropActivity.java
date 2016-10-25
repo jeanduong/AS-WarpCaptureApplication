@@ -44,6 +44,29 @@ public class CropActivity extends Activity {
         // Set for display
         snapshot_layer.setImageBitmap(bm);
 
+        ((Button) findViewById(R.id.reshoot_button)).setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                Intent result_intent = new Intent();
+
+                if (getParent() == null) {
+                    setResult(Activity.RESULT_CANCELED, result_intent);
+                }
+                else {
+                    getParent().setResult(Activity.RESULT_CANCELED, result_intent);
+                }
+
+                finish();
+            }
+        });
+
+
+
+
+
+
+
         ((Button) findViewById(R.id.crop_button)).setOnClickListener(new View.OnClickListener() {
 
             @Override
