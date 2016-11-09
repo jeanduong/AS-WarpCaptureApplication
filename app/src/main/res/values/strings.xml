@@ -1,16 +1,17 @@
 <resources>
-    <string name="app_name">Text zone capture</string>
+    <string name="app_name">Text zone capture application</string>
     <string name="quit_button_label">Quit</string>
     <string name="start_button_label">Start</string>
     <string name="help_button_label">Help</string>
-    <string name="help_verbose">A user guide will be placed here when stable version will be available.
+    <string name="help_verbose">A short guide will be placed here when stable version will be available.
     </string>
     <string name="verbose_done_button_label">Done</string>
-    <string name="introduction_verbose">Version numbers, copyrights and other disclaimers to be placed here.
+    <string name="introduction_verbose">Application under construction.
+        Version numbers, copyrights and other disclaimers will be placed here.
     </string>
     <string name="shutter_button_label">Snap</string>
     <string name="crop_button_label">Crop</string>
     <string name="reshoot_button_label">Resnap</string>
-    <string name="close_display_button_label">Close display</string>
+    <string name="close_display_button_label">Close preview</string>
 </resources>
  

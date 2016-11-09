@@ -1,12 +1,17 @@
 package com.example.jeanduong.myapplication;
 
-class QuadrilateralWarping {
-    private int X_1, Y_1, X_2, Y_2, X_3, Y_3, X_4, Y_4; // Quadrilateral
-    private int x_1, y_1, x_2, y_2, x_3, y_3, x_4, y_4; // Rectangle
+// This is a custom experimental version of optimized warping between a quadrilateral and
+// a rectangle.
+//
+// Not tested yet!!!
+
+class CustomQuadrilateralWarping {
+    private int X_1, Y_1, X_2, Y_2, X_3, Y_3, X_4, Y_4; // Quadrilateral's vertices
+    private int x_1, y_1, x_2, y_2, x_3, y_3, x_4, y_4; // Rectangle's vertices
     private double a, b, c, d, e, f, g, h;
 
-    QuadrilateralWarping(int XX_1, int YY_1, int XX_2, int YY_2, int XX_3, int YY_3, int XX_4, int YY_4,
-                         int xx_1, int yy_1, int xx_2, int yy_2, int xx_3, int yy_3, int xx_4, int yy_4)
+    CustomQuadrilateralWarping(int XX_1, int YY_1, int XX_2, int YY_2, int XX_3, int YY_3, int XX_4, int YY_4,
+                               int xx_1, int yy_1, int xx_2, int yy_2, int xx_3, int yy_3, int xx_4, int yy_4)
     {
         X_1 = XX_1; X_2 = XX_2; X_3 = XX_3; X_4 = XX_4;
         Y_1 = YY_1; Y_2 = YY_2; Y_3 = YY_3; Y_4 = YY_4;
@@ -56,7 +61,7 @@ class QuadrilateralWarping {
 
     private SquareMatrix CreateMainMatrix()
     {
-        SquareMatrix M = new SquareMatrix(8); // Matrix if filled with zero value
+        SquareMatrix M = new SquareMatrix(8); // Matrix is filled with zero value
 
         M.data[0][0] = x_1;
         M.data[2][0] = x_2;
@@ -178,7 +183,7 @@ class QuadrilateralWarping {
 
     private SquareMatrix CreateMatrixMa()
     {
-        SquareMatrix M = new SquareMatrix(8); // Matrix if filled with zero value
+        SquareMatrix M = new SquareMatrix(8); // Matrix is filled with zero value
 
         M.data[0][0] = X_1;
         M.data[1][0] = Y_1;
@@ -344,7 +349,7 @@ class QuadrilateralWarping {
 
     private SquareMatrix CreateMatrixMb()
     {
-        SquareMatrix M = new SquareMatrix(8); // Matrix if filled with zero value
+        SquareMatrix M = new SquareMatrix(8); // Matrix is filled with zero value
 
         M.data[0][0] = x_1;
         M.data[2][0] = x_2;
@@ -403,7 +408,7 @@ class QuadrilateralWarping {
 
     private SquareMatrix CreateMatrixMc()
     {
-        SquareMatrix M = new SquareMatrix(8); // Matrix if filled with zero value
+        SquareMatrix M = new SquareMatrix(8); // Matrix is filled with zero value
 
         M.data[0][0] = x_1;
         M.data[2][0] = x_2;
@@ -544,7 +549,7 @@ class QuadrilateralWarping {
 
     private SquareMatrix CreateMatrixMd()
     {
-        SquareMatrix M = new SquareMatrix(8); // Matrix if filled with zero value
+        SquareMatrix M = new SquareMatrix(8); // Matrix is filled with zero value
 
         M.data[0][0] = x_1;
         M.data[2][0] = x_2;
@@ -651,7 +656,7 @@ class QuadrilateralWarping {
 
     private SquareMatrix CreateMatrixMe()
     {
-        SquareMatrix M = new SquareMatrix(8); // Matrix if filled with zero value
+        SquareMatrix M = new SquareMatrix(8); // Matrix is filled with zero value
 
         M.data[0][0] = x_1;
         M.data[2][0] = x_2;
@@ -710,7 +715,7 @@ class QuadrilateralWarping {
 
     private SquareMatrix CreateMatrixMf()
     {
-        SquareMatrix M = new SquareMatrix(8); // Matrix if filled with zero value
+        SquareMatrix M = new SquareMatrix(8); // Matrix is filled with zero value
 
         M.data[0][0] = x_1;
         M.data[2][0] = x_2;
@@ -815,7 +820,7 @@ class QuadrilateralWarping {
 
     private SquareMatrix CreateMatrixMg()
     {
-        SquareMatrix M = new SquareMatrix(8); // Matrix if filled with zero value
+        SquareMatrix M = new SquareMatrix(8); // Matrix is filled with zero value
 
         M.data[0][0] = x_1;
         M.data[2][0] = x_2;
@@ -870,7 +875,7 @@ class QuadrilateralWarping {
 
     private SquareMatrix CreateMatrixMh()
     {
-        SquareMatrix M = new SquareMatrix(8); // Matrix if filled with zero value
+        SquareMatrix M = new SquareMatrix(8); // Matrix is filled with zero value
 
         M.data[0][0] = x_1;
         M.data[2][0] = x_2;

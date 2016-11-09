@@ -5,8 +5,18 @@ import java.util.Arrays;
 import static java.lang.Math.pow;
 
 public class SquareMatrix {
+
     int dimension = 2;
     double[][] data = new double[2][2];
+
+    // Constructors
+
+    SquareMatrix(int dim, double d)
+    {
+        dimension = dim;
+        data = new double[dimension][dimension];
+        Arrays.fill(data, d);
+    }
 
     SquareMatrix(int dim)
     {
@@ -23,6 +33,23 @@ public class SquareMatrix {
         for (int r = 0; r < dimension; ++r)
             for (int c = 0; c < dimension; ++c)
                 this.data[r][c] = M.data[r][c];
+    }
+
+    // Multiply all cells by a constant
+
+    public void ScaleCells(double factor)
+    {
+        if (factor != 1.0)
+        {
+            if (factor == 0.0)
+                Arrays.fill(data, 0.0);
+            else
+            {
+                for (int r = 0; r < dimension; ++r)
+                    for (int c = 0; c < dimension; ++c)
+                        this.data[r][c] *= factor;
+            }
+        }
     }
 
     public SquareMatrix MakeSquareBlock(int r_begin, int r_end, int c_begin, int c_end)
