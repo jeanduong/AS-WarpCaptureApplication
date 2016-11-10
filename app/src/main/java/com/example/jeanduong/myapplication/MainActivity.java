@@ -17,12 +17,14 @@ public class MainActivity extends Activity {
     Bitmap croped_image;
     String storage_location = Environment.getExternalStorageDirectory().toString();
 
+    public enum Crop_mode{QUAD, RECT}
+    
     final static String LABEL_EXTRA_CAPTURED_BYTES = "CAPTURED_BYTES";
-    final static String LABEL_EXTRA_CROPED_IMAGE = "CROPED_IMAGE";
+    //final static String LABEL_EXTRA_CROPED_IMAGE = "CROPED_IMAGE";
 
     final static int SNAPSHOT_REQUEST_CODE = 11;
     final static int MUTILATION_REQUEST_CODE = 13;
-    final static int DISPLAY_REQUEST_CODE = 17;
+    //final static int DISPLAY_REQUEST_CODE = 17;
 
     private static final String TAG = "Main activity"; // For log output
 

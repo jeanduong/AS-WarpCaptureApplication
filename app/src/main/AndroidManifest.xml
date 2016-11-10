@@ -23,14 +23,15 @@
         <activity android:name=".HelpActivity" />
         <activity
             android:name=".PhotoActivity"
-            android:screenOrientation="landscape"></activity>
+            android:screenOrientation="landscape" />
         <activity
             android:name=".CropActivity"
-            android:screenOrientation="landscape"></activity>
+            android:screenOrientation="landscape" />
         <activity
             android:name=".DisplayActivity"
-            android:screenOrientation="landscape"></activity>
-        <activity android:name=".QuadCropActivity"></activity>
+            android:screenOrientation="landscape" />
+        <activity android:name=".QuadCropActivity" />
+        <activity android:name=".CropChooserActivity"></activity>
     </application>
 
 </manifest>
