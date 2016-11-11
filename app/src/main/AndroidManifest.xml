@@ -30,8 +30,13 @@
         <activity
             android:name=".DisplayActivity"
             android:screenOrientation="landscape" />
-        <activity android:name=".QuadCropActivity" />
-        <activity android:name=".CropChooserActivity"></activity>
+        <activity
+            android:name=".QuadCropActivity"
+            android:screenOrientation="landscape" />
+        <activity
+            android:name=".CropChooserActivity"
+            android:screenOrientation="landscape" />
+        <activity android:name=".RectCropActivity"></activity>
     </application>
 
 </manifest>

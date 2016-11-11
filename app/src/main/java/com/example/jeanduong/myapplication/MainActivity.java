@@ -18,13 +18,14 @@ public class MainActivity extends Activity {
     String storage_location = Environment.getExternalStorageDirectory().toString();
 
     public enum Crop_mode{QUAD, RECT}
-    
+
     final static String LABEL_EXTRA_CAPTURED_BYTES = "CAPTURED_BYTES";
     //final static String LABEL_EXTRA_CROPED_IMAGE = "CROPED_IMAGE";
 
     final static int SNAPSHOT_REQUEST_CODE = 11;
-    final static int MUTILATION_REQUEST_CODE = 13;
-    //final static int DISPLAY_REQUEST_CODE = 17;
+    final static int CHOOSE_CROP_REQUEST_CODE = 13;
+    final static int RECT_CROP_REQUEST_CODE = 17;
+    final static int QUAD_CROP_REQUEST_CODE = 19;
 
     private static final String TAG = "Main activity"; // For log output
 
@@ -59,6 +60,8 @@ public class MainActivity extends Activity {
     }
 
     // Collect results from activities
+    /*
+    // Backup
     @Override
     protected void onActivityResult(int request_code, int result_code, Intent data_intent)
     {
@@ -91,6 +94,60 @@ public class MainActivity extends Activity {
             }
         }
     }
+    */
+    @Override
+    protected void onActivityResult(int request_code, int result_code, Intent data_intent)
+    {
+        super.onActivityResult(request_code, result_code, data_intent);
+
+        if (request_code == SNAPSHOT_REQUEST_CODE)
+        {
+            if (result_code == Activity.RESULT_OK)
+            {
+                Intent itt_choose_crop = new Intent(this, CropChooserActivity.class);
+
+                if (itt_choose_crop.resolveActivity(getPackageManager()) != null)
+                    startActivityForResult(itt_choose_crop, CHOOSE_CROP_REQUEST_CODE);
+            }
+            else
+            {
+                Toast.makeText(this, "Photo activity failed", Toast.LENGTH_LONG).show();
+                Log.e(TAG, "****** Photo activity failed");
+            }
+        }
+        else if (request_code == CHOOSE_CROP_REQUEST_CODE)
+        {
+            Object cm = data_intent.getExtras().get("crop_mode");
+
+            if (cm == Crop_mode.QUAD) {
+                Intent itt_crop = new Intent(this, QuadCropActivity.class);
+
+                if (itt_crop.resolveActivity(getPackageManager()) != null)
+                    startActivityForResult(itt_crop, QUAD_CROP_REQUEST_CODE);
+            }
+            /*
+            else if (cm == Crop_mode.RECT) {
+                Intent itt_crop = new Intent(this, RectCropActivity.class);
+
+                if (itt_crop.resolveActivity(getPackageManager()) != null)
+                    startActivityForResult(itt_crop, RECT_CROP_REQUEST_CODE);
+            }
+            */
+        }
+        else if (request_code == RECT_CROP_REQUEST_CODE ||
+                request_code == QUAD_CROP_REQUEST_CODE) {
+            if (result_code == Activity.RESULT_OK) {
+                Log.e(TAG, "****** Crop done");
+
+                Intent itt_display_zoi = new Intent(this, DisplayActivity.class);
+
+                if (itt_display_zoi.resolveActivity(getPackageManager()) != null)
+                    startActivity(itt_display_zoi);
+            }
+        }
+    }
+
+
 
     // Called when the user clicks the quit button
     // Close current activity. This should close the

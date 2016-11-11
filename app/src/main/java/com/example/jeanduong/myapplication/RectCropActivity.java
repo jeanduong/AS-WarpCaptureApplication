@@ -25,14 +25,14 @@ import java.util.Date;
 import static java.lang.Math.max;
 import static java.lang.Math.min;
 
-public class CropActivity extends Activity {
+public class RectCropActivity extends Activity {
 
-    private static final String TAG = "Crop activity"; // For log output
+    private static final String TAG = "Rect crop activity"; // For log output
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_crop);
+        setContentView(R.layout.activity_rect_crop);
 
         final ImageView snapshot_layer = (ImageView) findViewById(R.id.display_view);
         final DragView drag_layer = (DragView) findViewById(R.id.drag_view);
@@ -134,11 +134,11 @@ public class CropActivity extends Activity {
                     fis.close();
                     fos.close();
 
-                    Toast.makeText(CropActivity.this, "Data saved at " + str_date , Toast.LENGTH_SHORT).show();
+                    Toast.makeText(RectCropActivity.this, "Data saved at " + str_date , Toast.LENGTH_SHORT).show();
                 }
                 catch (Exception e) {
                     Log.e(TAG, "Failed to save image");
-                    }
+                }
 
                 Intent result_intent = new Intent();
 
