@@ -125,14 +125,13 @@ public class MainActivity extends Activity {
                 if (itt_crop.resolveActivity(getPackageManager()) != null)
                     startActivityForResult(itt_crop, QUAD_CROP_REQUEST_CODE);
             }
-            /*
+
             else if (cm == Crop_mode.RECT) {
                 Intent itt_crop = new Intent(this, RectCropActivity.class);
 
                 if (itt_crop.resolveActivity(getPackageManager()) != null)
                     startActivityForResult(itt_crop, RECT_CROP_REQUEST_CODE);
             }
-            */
         }
         else if (request_code == RECT_CROP_REQUEST_CODE ||
                 request_code == QUAD_CROP_REQUEST_CODE) {

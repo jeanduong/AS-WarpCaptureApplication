@@ -1,5 +1,9 @@
 package com.example.jeanduong.myapplication;
 
+/**
+ * Created by jeanduong on 14/11/2016.
+ */
+
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -13,7 +17,7 @@ import static java.lang.Math.max;
 import static java.lang.Math.min;
 import static java.lang.Math.pow;
 
-public class DragView extends View {
+public class RectDragView extends View {
     private Paint pt = new Paint();
     private Path ph = new Path();
     private Paint paintFill = new Paint();
@@ -25,7 +29,7 @@ public class DragView extends View {
     private boolean first_time_draw = true;
     int argmin = 1;
 
-    public DragView(Context context, AttributeSet attrs) {
+    public RectDragView(Context context, AttributeSet attrs) {
         super(context, attrs);
 
         pt.setAntiAlias(true);
@@ -46,21 +50,20 @@ public class DragView extends View {
         h = getHeight();
 
         if (first_time_draw) {
-            x_1 = w / 4;
+            x_1 = w / 2;
             x_2 = 3 * w / 4;
-            x_3 = x_2;
-            x_4 = x_1;
+            x_3 = x_1;
+            x_4 = w / 4;
 
             y_1 = h / 4;
-            y_2 = y_1;
+            y_2 = h / 2;
             y_3 = 3 * h / 4;
-            y_4 = y_3;
+            y_4 = y_2;
             first_time_draw = false;
         }
 
-        drawVertices(cv);
+        drawDragPoints(cv);
         drawBorders(cv);
-        cv.drawPath(ph, pt);
     }
 
     protected void onSizeChanged(){
@@ -81,26 +84,17 @@ public class DragView extends View {
         cv.drawRect(Ax, By, Bx, getBottom(), paintFill);//Bottom
     }
 
-    protected void drawVertices(Canvas cv){
+    protected void drawDragPoints(Canvas cv){
         pt.setColor(Color.RED);
-        cv.drawCircle(x_1, y_1, 10, pt);
-        cv.drawCircle(x_2, y_2, 10, pt);
-        cv.drawCircle(x_3, y_3, 10, pt);
-        cv.drawCircle(x_4, y_4, 10, pt);
+        cv.drawCircle(x_1, y_1, 30, pt);
+        cv.drawCircle(x_2, y_2, 30, pt);
+        cv.drawCircle(x_3, y_3, 30, pt);
+        cv.drawCircle(x_4, y_4, 30, pt);
 
-        cv.drawLine(x_1, y_1, x_2, y_2, pt);
-        cv.drawLine(x_2, y_2, x_3, y_3, pt);
-        cv.drawLine(x_3, y_3, x_4, y_4, pt);
-        cv.drawLine(x_4, y_4, x_1, y_1, pt);
-
-        int x_min = min(x_1, x_4);
-        int x_max = max(x_2, x_3);
-        int y_min = min(y_1, y_2);
-        int y_max = max(y_3, y_4);
-
-        pt.setColor(Color.MAGENTA);
-        cv.drawRect(x_min, y_min, x_max, y_max, pt);
-        pt.setColor(Color.RED);
+        cv.drawLine(0, y_1, w - 1, y_1, pt);
+        cv.drawLine(x_2, 0, x_2, h - 1, pt);
+        cv.drawLine(0, y_3, w - 1, y_3, pt);
+        cv.drawLine(x_4, 0, x_4, h - 1, pt);
     }
 
     @Override
@@ -137,7 +131,7 @@ public class DragView extends View {
 
             case MotionEvent.ACTION_MOVE:
                 ph.reset();
-                ph.addCircle(x_touch, y_touch, 10, Path.Direction.CCW);
+                ph.addCircle(x_touch, y_touch, 30, Path.Direction.CCW);
                 break;
 
             case MotionEvent.ACTION_UP:
@@ -146,7 +140,7 @@ public class DragView extends View {
                     int new_x_1 = (int) x_touch;
                     int new_y_1 = (int) y_touch;
 
-                    if ((new_x_1 < x_3) && (new_y_1 < y_3) && check_convexity(new_x_1, new_y_1, x_2, y_2, x_3, y_3, x_4, y_4))
+                    if (new_y_1 < y_3)
                     {
                         x_1 = new_x_1;
                         y_1 = new_y_1;
@@ -156,7 +150,7 @@ public class DragView extends View {
                     int new_x_2 = (int) x_touch;
                     int new_y_2 = (int) y_touch;
 
-                    if ((new_x_2 > x_4) && (new_y_2 < y_4) && check_convexity(x_1, y_1, new_x_2, new_y_2, x_3, y_3, x_4, y_4))
+                    if (new_x_2 > x_4)
                     {
                         x_2 = new_x_2;
                         y_2 = new_y_2;
@@ -166,7 +160,7 @@ public class DragView extends View {
                     int new_x_3 = (int) x_touch;
                     int new_y_3 = (int) y_touch;
 
-                    if ((new_x_3 > x_1) && (new_y_3 > y_1) && check_convexity(x_1, y_1, x_2, y_2, new_x_3, new_y_3, x_4, y_4))
+                    if (new_y_3 > y_1)
                     {
                         x_3 = new_x_3;
                         y_3 = new_y_3;
@@ -176,7 +170,7 @@ public class DragView extends View {
                     int new_x_4 = (int) x_touch;
                     int new_y_4 = (int) y_touch;
 
-                    if ((new_x_4 < x_2) && (new_y_4 > y_2) && check_convexity(x_1, y_1, x_2, y_2, x_3, y_3, new_x_4, new_y_4))
+                    if (new_x_4 < x_2)
                     {
                         x_4 = new_x_4;
                         y_4 = new_y_4;
@@ -194,39 +188,6 @@ public class DragView extends View {
         return true;
     }
 
-    protected double det(double x, double y, double x_prime, double y_prime){
-        return (x * y_prime - x_prime * y);
-    }
 
-    protected boolean check_convexity(int x_1, int y_1, int x_2, int y_2, int x_3, int y_3, int x_4, int y_4){
-        double x_bk = x_4 - x_1;
-        double x_fd = x_2 - x_1;
-        double y_bk = y_4 - y_1;
-        double y_fd = y_2 - y_1;
 
-        if (det(x_bk, y_bk, x_fd, y_fd) > 0) return false;
-
-        x_bk = -x_fd;
-        y_bk = -y_fd;
-        x_fd = x_3 - x_2;
-        y_fd = y_3 - y_2;
-
-        if (det(x_bk, y_bk, x_fd, y_fd) > 0) return false;
-
-        x_bk = -x_fd;
-        y_bk = -y_fd;
-        x_fd = x_4 - x_3;
-        y_fd = y_4 - y_3;
-
-        if (det(x_bk, y_bk, x_fd, y_fd) > 0) return false;
-
-        x_bk = -x_fd;
-        y_bk = -y_fd;
-        x_fd = x_1 - x_4;
-        y_fd = y_1 - y_4;
-
-        if (det(x_bk, y_bk, x_fd, y_fd) > 0) return false;
-
-        return true;
-    }
 }

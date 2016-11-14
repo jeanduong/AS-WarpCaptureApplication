@@ -22,7 +22,7 @@
         android:scaleType="centerCrop"
       />
 
-    <com.example.jeanduong.myapplication.DragView
+    <com.example.jeanduong.myapplication.QuadDragView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_alignParentEnd="true"

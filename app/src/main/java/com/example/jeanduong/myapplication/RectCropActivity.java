@@ -35,7 +35,7 @@ public class RectCropActivity extends Activity {
         setContentView(R.layout.activity_rect_crop);
 
         final ImageView snapshot_layer = (ImageView) findViewById(R.id.display_view);
-        final DragView drag_layer = (DragView) findViewById(R.id.drag_view);
+        final RectDragView drag_layer = (RectDragView) findViewById(R.id.drag_view);
 
         // Load image from file
         final Bitmap bm = BitmapFactory.decodeFile(MainActivity.SNAPSHOT_FILE_NAME);
@@ -65,10 +65,10 @@ public class RectCropActivity extends Activity {
             @Override
             public void onClick(View v) {
                 // Embedding rectangle for selected zone
-                int x_1 = drag_layer.x_1, x_2 = drag_layer.x_2;
-                int x_3 = drag_layer.x_3, x_4 = drag_layer.x_4;
-                int y_1 = drag_layer.y_1, y_2 = drag_layer.y_2;
-                int y_3 = drag_layer.y_3, y_4 = drag_layer.y_4;
+                int x_1 = drag_layer.x_4, x_2 = drag_layer.x_2;
+                int x_3 = drag_layer.x_2, x_4 = drag_layer.x_4;
+                int y_1 = drag_layer.y_1, y_2 = drag_layer.y_1;
+                int y_3 = drag_layer.y_3, y_4 = drag_layer.y_3;
 
                 float aspectRatioH = (float)drag_layer.getHeight() / (float)drag_layer.getWidth();
                 //

@@ -35,7 +35,7 @@ public class CropActivity extends Activity {
         setContentView(R.layout.activity_crop);
 
         final ImageView snapshot_layer = (ImageView) findViewById(R.id.display_view);
-        final DragView drag_layer = (DragView) findViewById(R.id.drag_view);
+        final QuadDragView drag_layer = (QuadDragView) findViewById(R.id.drag_view);
 
         // Load image from file
         final Bitmap bm = BitmapFactory.decodeFile(MainActivity.SNAPSHOT_FILE_NAME);
