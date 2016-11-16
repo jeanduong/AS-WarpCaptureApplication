@@ -14,8 +14,9 @@ import static java.lang.Math.min;
 import static java.lang.Math.pow;
 
 public class QuadDragView extends View {
-    private Paint pt = new Paint();
+
     private Path ph = new Path();
+    private Paint pt = new Paint();
     private Paint paintFill = new Paint();
 
     private int w;
@@ -59,7 +60,7 @@ public class QuadDragView extends View {
         }
 
         drawVertices(cv);
-        drawBorders(cv);
+        fillBorders(cv);
         cv.drawPath(ph, pt);
     }
 
@@ -68,7 +69,7 @@ public class QuadDragView extends View {
         h = getHeight();
     }
 
-    protected void drawBorders(Canvas cv) {
+    protected void fillBorders(Canvas cv) {
         //Draw cut area
         int Ax = min(x_1, x_4);
         int Bx = max(x_2, x_3);

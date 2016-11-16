@@ -1,9 +1,5 @@
 package com.example.jeanduong.myapplication;
 
-/**
- * Created by jeanduong on 14/11/2016.
- */
-
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -18,8 +14,9 @@ import static java.lang.Math.min;
 import static java.lang.Math.pow;
 
 public class RectDragView extends View {
-    private Paint pt = new Paint();
+
     private Path ph = new Path();
+    private Paint pt = new Paint();
     private Paint paintFill = new Paint();
 
     private int w;
@@ -32,6 +29,7 @@ public class RectDragView extends View {
     public RectDragView(Context context, AttributeSet attrs) {
         super(context, attrs);
 
+        pt.setColor(Color.RED);
         pt.setAntiAlias(true);
         pt.setStrokeWidth(3);
         pt.setStyle(Paint.Style.STROKE);
@@ -63,7 +61,8 @@ public class RectDragView extends View {
         }
 
         drawDragPoints(cv);
-        drawBorders(cv);
+        fillBorders(cv);
+        cv.drawPath(ph, pt);
     }
 
     protected void onSizeChanged(){
@@ -71,12 +70,12 @@ public class RectDragView extends View {
         h = getHeight();
     }
 
-    protected void drawBorders(Canvas cv) {
+    protected void fillBorders(Canvas cv) {
         //Draw cut area
-        int Ax = min(x_1, x_4);
-        int Bx = max(x_2, x_3);
-        int Ay = min(y_1, y_2);
-        int By = max(y_3, y_4);
+        int Ax = min(x_2, x_4);
+        int Bx = max(x_2, x_4);
+        int Ay = min(y_1, y_3);
+        int By = max(y_1, y_3);
 
         cv.drawRect(Ax,0, Bx, Ay, paintFill);//Top
         cv.drawRect(0, 0, Ax, getBottom(), paintFill);//Left
@@ -85,16 +84,18 @@ public class RectDragView extends View {
     }
 
     protected void drawDragPoints(Canvas cv){
-        pt.setColor(Color.RED);
+
+        x_1 = (x_2 + x_4) / 2;
+        x_3 = x_1;
+        y_2 = (y_1 + y_3) / 2;
+        y_4 = y_2;
+
         cv.drawCircle(x_1, y_1, 30, pt);
         cv.drawCircle(x_2, y_2, 30, pt);
         cv.drawCircle(x_3, y_3, 30, pt);
         cv.drawCircle(x_4, y_4, 30, pt);
 
-        cv.drawLine(0, y_1, w - 1, y_1, pt);
-        cv.drawLine(x_2, 0, x_2, h - 1, pt);
-        cv.drawLine(0, y_3, w - 1, y_3, pt);
-        cv.drawLine(x_4, 0, x_4, h - 1, pt);
+        cv.drawRect(x_4, y_1, x_2, y_3, pt);
     }
 
     @Override
