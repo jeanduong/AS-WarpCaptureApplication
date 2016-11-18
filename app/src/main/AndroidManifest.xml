@@ -28,9 +28,6 @@
             android:name=".CropActivity"
             android:screenOrientation="landscape" />
         <activity
-            android:name=".DisplayActivity"
-            android:screenOrientation="landscape" />
-        <activity
             android:name=".QuadCropActivity"
             android:screenOrientation="landscape" />
         <activity

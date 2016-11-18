@@ -138,10 +138,6 @@ public class MainActivity extends Activity {
             if (result_code == Activity.RESULT_OK) {
                 Log.e(TAG, "****** Crop done");
 
-                Intent itt_display_zoi = new Intent(this, DisplayActivity.class);
-
-                if (itt_display_zoi.resolveActivity(getPackageManager()) != null)
-                    startActivity(itt_display_zoi);
             }
         }
     }

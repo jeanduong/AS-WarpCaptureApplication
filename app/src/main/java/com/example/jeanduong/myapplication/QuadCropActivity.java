@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.graphics.BitmapRegionDecoder;
 import android.graphics.Rect;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.util.Log;
 import android.util.Xml;
 import android.view.View;
@@ -13,8 +14,14 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.widget.Toast;
 
+import org.opencv.android.BaseLoaderCallback;
+import org.opencv.android.LoaderCallbackInterface;
+import org.opencv.android.OpenCVLoader;
+import org.opencv.android.Utils;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
+import org.opencv.core.Scalar;
+import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
 import org.xmlpull.v1.XmlSerializer;
 
@@ -34,6 +41,22 @@ import static java.lang.Math.min;
 public class QuadCropActivity extends Activity {
 
     private static final String TAG = "Quad crop activity"; // For log output
+
+    private BaseLoaderCallback mLoaderCallback = new BaseLoaderCallback(this) {
+        @Override
+        public void onManagerConnected(int status) {
+            switch (status) {
+                case LoaderCallbackInterface.SUCCESS:
+                {
+                    Log.i("OpenCV", "OpenCV loaded successfully");
+                } break;
+                default:
+                {
+                    super.onManagerConnected(status);
+                } break;
+            }
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -128,23 +151,7 @@ public class QuadCropActivity extends Activity {
                 int h = b - t + 1;
                 int w = r - l + 1;
 
-
-
-
-
-
-
                 try {
-                    // Load portion of image bounded by drag points bounding enclosing rectangle
-                    InputStream str = new FileInputStream(MainActivity.SNAPSHOT_FILE_NAME);
-                    BitmapRegionDecoder dcd = BitmapRegionDecoder.newInstance(str, false);
-                    BitmapFactory.Options opt = new BitmapFactory.Options();
-                    Rect rct = new Rect(l, t, r, b);
-
-                    opt.inPreferredConfig = Bitmap.Config.ARGB_8888;
-
-                    Bitmap rgb_img = dcd.decodeRegion(rct, opt);
-
                     // Estimate perspective transformation between drag point
                     // quadrilateral and their enclosing rectangle
                     Mat src_points = new Mat(4, 1, CvType.CV_32FC2);
@@ -155,32 +162,45 @@ public class QuadCropActivity extends Activity {
 
                     Mat persp = Imgproc.getPerspectiveTransform(src_points, dst_points);
 
+                    // Load portion of image bounded by drag points bounding enclosing rectangle
+                    InputStream str = new FileInputStream(MainActivity.SNAPSHOT_FILE_NAME);
+                    BitmapRegionDecoder dcd = BitmapRegionDecoder.newInstance(str, false);
+                    BitmapFactory.Options opt = new BitmapFactory.Options();
+                    Rect rct = new Rect(l, t, r, b);
+
+                    opt.inPreferredConfig = Bitmap.Config.ARGB_8888;
+
+                    Bitmap src_img = dcd.decodeRegion(rct, opt);
+
+                    Mat src_mat = new Mat(h, w, CvType.CV_8U, new Scalar(4));
+                    Mat dst_mat = new Mat(h, w, CvType.CV_8U, new Scalar(4));
+
+                    Utils.bitmapToMat(src_img, src_mat);
+
+                    // Apply perspective transform using matrices
+
+                    Imgproc.warpPerspective(src_mat, dst_mat, persp, new Size(h, w));
+
+                    // Retrieve bitmap from resulting matrix
+                    Bitmap dst_img = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
+                    Utils.matToBitmap(dst_mat, dst_img);
+
+                    //FileOutputStream output_img = new FileOutputStream(MainActivity.ROOT_FILE_NAME + str_date + ".jpg");
+                    FileOutputStream output_stream = new FileOutputStream(MainActivity.ZOI_FILE_NAME);
+                    //targetBitmap.compress(Bitmap.CompressFormat.JPEG, 100, output_img);
+                    dst_img.compress(Bitmap.CompressFormat.JPEG, 100, output_stream);
+                    output_stream.flush();
+                    output_stream.close();
 
 
 
 
 
-                    FileOutputStream output_img = new FileOutputStream(MainActivity.ROOT_FILE_NAME + str_date + ".jpg");
-                    targetBitmap.compress(Bitmap.CompressFormat.JPEG, 100, output_img);
-                    output_img.flush();
-                    output_img.close();
+                    // Set for display
+                    snapshot_layer.setImageBitmap(BitmapFactory.decodeFile(MainActivity.ZOI_FILE_NAME));
 
-                    //FileOutputStream output_xml = new FileOutputStream(MainActivity.ROOT_FILE_NAME + str_date + ".xml");
-                    //output_xml.write(data_points.getBytes());
-                    //output_xml.flush();
-                    //output_xml.close();
 
-                    File tmp = new File(MainActivity.SNAPSHOT_FILE_NAME);
-                    tmp.deleteOnExit();
 
-                    // Duplicate in ZOI image file
-                    FileInputStream fis = new FileInputStream(new File(MainActivity.ROOT_FILE_NAME + str_date + ".jpg"));
-                    FileOutputStream fos = new FileOutputStream(new File(MainActivity.ZOI_FILE_NAME));
-                    FileChannel fic = fis.getChannel();
-                    FileChannel foc = fos.getChannel();
-                    fic.transferTo(0, fic.size(), foc);
-                    fis.close();
-                    fos.close();
 
                     Toast.makeText(QuadCropActivity.this, "Data saved at " + str_date , Toast.LENGTH_SHORT).show();
                 }
@@ -202,46 +222,15 @@ public class QuadCropActivity extends Activity {
         });
     }
 
-    private String writeXml(int x1, int y1, int x2, int y2, int x3, int y3, int x4, int y4) {
-        XmlSerializer serializer = Xml.newSerializer();
-        StringWriter writer = new StringWriter();
-        try {
-            serializer.setOutput(writer);
-            serializer.startDocument("UTF-8", true);
-
-            serializer.startTag("", "Quadrilateral");
-
-            serializer.startTag("", "ControlPoint");
-            serializer.attribute("", "xcoord", Integer.toString(x1));
-            serializer.attribute("", "ycoord", Integer.toString(y1));
-            serializer.attribute("", "label", "topleft");
-            serializer.endTag("", "ControlPoint");
-
-            serializer.startTag("", "ControlPoint");
-            serializer.attribute("", "xcoord", Integer.toString(x2));
-            serializer.attribute("", "ycoord", Integer.toString(y2));
-            serializer.attribute("", "label", "topright");
-            serializer.endTag("", "ControlPoint");
-
-            serializer.startTag("", "ControlPoint");
-            serializer.attribute("", "xcoord", Integer.toString(x3));
-            serializer.attribute("", "ycoord", Integer.toString(y3));
-            serializer.attribute("", "label", "bottomright");
-            serializer.endTag("", "ControlPoint");
-
-            serializer.startTag("", "ControlPoint");
-            serializer.attribute("", "xcoord", Integer.toString(x4));
-            serializer.attribute("", "ycoord", Integer.toString(y4));
-            serializer.attribute("", "label", "bottomleft");
-            serializer.endTag("", "ControlPoint");
-
-            serializer.endTag("", "Quadrilateral");
-
-            serializer.endDocument();
-            return writer.toString();
-        } catch (Exception e) {
-            throw new RuntimeException(e);
+    public void onResume()
+    {
+        super.onResume();
+        if (!OpenCVLoader.initDebug()) {
+            Log.d("OpenCV", "Internal OpenCV library not found. Using OpenCV Manager for initialization");
+            OpenCVLoader.initAsync(OpenCVLoader.OPENCV_VERSION_3_0_0, this, mLoaderCallback);
+        } else {
+            Log.d("OpenCV", "OpenCV library found inside package. Using it!");
+            mLoaderCallback.onManagerConnected(LoaderCallbackInterface.SUCCESS);
         }
     }
-
 }
