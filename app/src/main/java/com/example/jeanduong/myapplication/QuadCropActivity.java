@@ -2,6 +2,8 @@ package com.example.jeanduong.myapplication;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.BitmapRegionDecoder;
+import android.graphics.Rect;
 import android.os.Bundle;
 import android.util.Log;
 import android.util.Xml;
@@ -11,11 +13,15 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.widget.Toast;
 
+import org.opencv.core.CvType;
+import org.opencv.core.Mat;
+import org.opencv.imgproc.Imgproc;
 import org.xmlpull.v1.XmlSerializer;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.InputStream;
 import java.io.StringWriter;
 import java.nio.channels.FileChannel;
 import java.text.SimpleDateFormat;
@@ -109,18 +115,60 @@ public class QuadCropActivity extends Activity {
                 Date present = cal.getTime();
                 String str_date = simple_format.format(present);
 
-                String data_points = writeXml(new_x_1, new_y_1, new_x_2, new_y_2, new_x_3, new_y_3, new_x_4, new_y_4);
+                // Compute perspective transform, stretch quadrilateral
+                // portion of image to rectangular one before saving it
+
+                // Update drag point coordinates
+                x_1 = new_x_1; x_2 = new_x_2; x_3 = new_x_3; x_4 = new_x_4;
+                y_1 = new_y_1; y_2 = new_y_2; y_3 = new_y_3; y_4 = new_y_4;
+                int l = min(x_1, x_4);
+                int r = max(x_2, x_3);
+                int t = min(y_1, y_2);
+                int b = max(y_3, y_4);
+                int h = b - t + 1;
+                int w = r - l + 1;
+
+
+
+
+
+
 
                 try {
+                    // Load portion of image bounded by drag points bounding enclosing rectangle
+                    InputStream str = new FileInputStream(MainActivity.SNAPSHOT_FILE_NAME);
+                    BitmapRegionDecoder dcd = BitmapRegionDecoder.newInstance(str, false);
+                    BitmapFactory.Options opt = new BitmapFactory.Options();
+                    Rect rct = new Rect(l, t, r, b);
+
+                    opt.inPreferredConfig = Bitmap.Config.ARGB_8888;
+
+                    Bitmap rgb_img = dcd.decodeRegion(rct, opt);
+
+                    // Estimate perspective transformation between drag point
+                    // quadrilateral and their enclosing rectangle
+                    Mat src_points = new Mat(4, 1, CvType.CV_32FC2);
+                    Mat dst_points = new Mat(4, 1, CvType.CV_32FC2);
+
+                    src_points.put(0, 0, x_1, y_1, x_2, y_2, x_3, y_3, x_4, y_4);
+                    dst_points.put(0, 0, l, t, r, t, r, b, l, b);
+
+                    Mat persp = Imgproc.getPerspectiveTransform(src_points, dst_points);
+
+
+
+
+
+
                     FileOutputStream output_img = new FileOutputStream(MainActivity.ROOT_FILE_NAME + str_date + ".jpg");
                     targetBitmap.compress(Bitmap.CompressFormat.JPEG, 100, output_img);
                     output_img.flush();
                     output_img.close();
 
-                    FileOutputStream output_xml = new FileOutputStream(MainActivity.ROOT_FILE_NAME + str_date + ".xml");
-                    output_xml.write(data_points.getBytes());
-                    output_xml.flush();
-                    output_xml.close();
+                    //FileOutputStream output_xml = new FileOutputStream(MainActivity.ROOT_FILE_NAME + str_date + ".xml");
+                    //output_xml.write(data_points.getBytes());
+                    //output_xml.flush();
+                    //output_xml.close();
 
                     File tmp = new File(MainActivity.SNAPSHOT_FILE_NAME);
                     tmp.deleteOnExit();
