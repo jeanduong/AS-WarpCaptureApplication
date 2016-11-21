@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <item name="crop_button_label" type="id">Crop</item>
+    <item name="visualizer" type="id" />
+    <item name="close_crop_display_button" type="id" />
 </resources>

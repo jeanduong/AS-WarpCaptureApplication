@@ -15,5 +15,6 @@
     <string name="rect_crop_button_label">Rect</string>
     <string name="quad_crop_button_label">Quad</string>
     <string name="close_display_button_label">Close preview</string>
+    <string name="label_close_crop_display_button">Close preview</string>
 </resources>
  

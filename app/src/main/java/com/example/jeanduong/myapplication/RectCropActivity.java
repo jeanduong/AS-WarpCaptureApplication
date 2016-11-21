@@ -109,18 +109,11 @@ public class RectCropActivity extends Activity {
                 Date present = cal.getTime();
                 String str_date = simple_format.format(present);
 
-                String data_points = writeXml(new_x_1, new_y_1, new_x_2, new_y_2, new_x_3, new_y_3, new_x_4, new_y_4);
-
                 try {
                     FileOutputStream output_img = new FileOutputStream(MainActivity.ROOT_FILE_NAME + str_date + ".jpg");
                     targetBitmap.compress(Bitmap.CompressFormat.JPEG, 100, output_img);
                     output_img.flush();
                     output_img.close();
-
-                    FileOutputStream output_xml = new FileOutputStream(MainActivity.ROOT_FILE_NAME + str_date + ".xml");
-                    output_xml.write(data_points.getBytes());
-                    output_xml.flush();
-                    output_xml.close();
 
                     File tmp = new File(MainActivity.SNAPSHOT_FILE_NAME);
                     tmp.deleteOnExit();
@@ -134,7 +127,7 @@ public class RectCropActivity extends Activity {
                     fis.close();
                     fos.close();
 
-                    Toast.makeText(RectCropActivity.this, "Data saved at " + str_date , Toast.LENGTH_SHORT).show();
+                    Toast.makeText(RectCropActivity.this, "Image saved at " + str_date , Toast.LENGTH_SHORT).show();
                 }
                 catch (Exception e) {
                     Log.e(TAG, "Failed to save image");
@@ -153,47 +146,4 @@ public class RectCropActivity extends Activity {
             }
         });
     }
-
-    private String writeXml(int x1, int y1, int x2, int y2, int x3, int y3, int x4, int y4) {
-        XmlSerializer serializer = Xml.newSerializer();
-        StringWriter writer = new StringWriter();
-        try {
-            serializer.setOutput(writer);
-            serializer.startDocument("UTF-8", true);
-
-            serializer.startTag("", "Quadrilateral");
-
-            serializer.startTag("", "ControlPoint");
-            serializer.attribute("", "xcoord", Integer.toString(x1));
-            serializer.attribute("", "ycoord", Integer.toString(y1));
-            serializer.attribute("", "label", "topleft");
-            serializer.endTag("", "ControlPoint");
-
-            serializer.startTag("", "ControlPoint");
-            serializer.attribute("", "xcoord", Integer.toString(x2));
-            serializer.attribute("", "ycoord", Integer.toString(y2));
-            serializer.attribute("", "label", "topright");
-            serializer.endTag("", "ControlPoint");
-
-            serializer.startTag("", "ControlPoint");
-            serializer.attribute("", "xcoord", Integer.toString(x3));
-            serializer.attribute("", "ycoord", Integer.toString(y3));
-            serializer.attribute("", "label", "bottomright");
-            serializer.endTag("", "ControlPoint");
-
-            serializer.startTag("", "ControlPoint");
-            serializer.attribute("", "xcoord", Integer.toString(x4));
-            serializer.attribute("", "ycoord", Integer.toString(y4));
-            serializer.attribute("", "label", "bottomleft");
-            serializer.endTag("", "ControlPoint");
-
-            serializer.endTag("", "Quadrilateral");
-
-            serializer.endDocument();
-            return writer.toString();
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
-
 }

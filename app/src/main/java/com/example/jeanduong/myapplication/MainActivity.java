@@ -14,13 +14,9 @@ import java.io.File;
 
 public class MainActivity extends Activity {
 
-    Bitmap croped_image;
-    String storage_location = Environment.getExternalStorageDirectory().toString();
-
     public enum Crop_mode{QUAD, RECT}
 
     final static String LABEL_EXTRA_CAPTURED_BYTES = "CAPTURED_BYTES";
-    //final static String LABEL_EXTRA_CROPED_IMAGE = "CROPED_IMAGE";
 
     final static int SNAPSHOT_REQUEST_CODE = 11;
     final static int CHOOSE_CROP_REQUEST_CODE = 13;
@@ -29,15 +25,19 @@ public class MainActivity extends Activity {
 
     private static final String TAG = "Main activity"; // For log output
 
-    final static String SNAPSHOT_FILE_NAME = Environment.getExternalStorageDirectory() + File.separator + "snapshot.jpg";
-    final static String ZOI_FILE_NAME = Environment.getExternalStorageDirectory() + File.separator + "zoi.jpg";
     final static String ROOT_FILE_NAME = Environment.getExternalStorageDirectory() + File.separator;
+    final static String ZOI_FILE_NAME = Environment.getExternalStorageDirectory() + File.separator + "zoi.jpg";
+    final static String SNAPSHOT_FILE_NAME = Environment.getExternalStorageDirectory() + File.separator + "snapshot.jpg";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
     }
+
+    ///////////////
+    // Do stuffs //
+    ///////////////
 
     // Called when the user clicks the help button
     // Display some (hopefully) useful instructions
@@ -59,42 +59,16 @@ public class MainActivity extends Activity {
             startActivityForResult(itt_snap, SNAPSHOT_REQUEST_CODE);
     }
 
-    // Collect results from activities
-    /*
-    // Backup
-    @Override
-    protected void onActivityResult(int request_code, int result_code, Intent data_intent)
-    {
-        super.onActivityResult(request_code, result_code, data_intent);
-
-        if (request_code == SNAPSHOT_REQUEST_CODE)
-        {
-            if (result_code == Activity.RESULT_OK)
-            {
-                Intent itt_crop = new Intent(this, CropActivity.class);
-                itt_crop.putExtra(LABEL_EXTRA_CAPTURED_BYTES, data_intent.getByteArrayExtra(LABEL_EXTRA_CAPTURED_BYTES));
-
-                if (itt_crop.resolveActivity(getPackageManager()) != null)
-                    startActivityForResult(itt_crop, MUTILATION_REQUEST_CODE);
-            }
-            else
-            {
-                Toast.makeText(this, "Photo activity failed", Toast.LENGTH_LONG).show();
-                Log.e(TAG, "****** Photo activity failed");
-            }
-        }
-        else if (request_code == MUTILATION_REQUEST_CODE) {
-            if (result_code == Activity.RESULT_OK) {
-                Log.e(TAG, "****** Crop done");
-
-                Intent itt_display_zoi = new Intent(this, DisplayActivity.class);
-
-                if (itt_display_zoi.resolveActivity(getPackageManager()) != null)
-                    startActivity(itt_display_zoi);
-            }
-        }
+    // Called when the user clicks the quit button. This closes current activity.
+    // This should close the application since it is the main activity.
+    public void suicide(View view) {
+        finish();
     }
-    */
+
+    /////////////////////////////////////
+    // Collect results from activities //
+    /////////////////////////////////////
+
     @Override
     protected void onActivityResult(int request_code, int result_code, Intent data_intent)
     {
@@ -138,16 +112,10 @@ public class MainActivity extends Activity {
             if (result_code == Activity.RESULT_OK) {
                 Log.e(TAG, "****** Crop done");
 
+                Intent itt_display_crop = new Intent(this, DisplayCropActivity.class);
+
+                startActivity(itt_display_crop);
             }
         }
-    }
-
-
-
-    // Called when the user clicks the quit button
-    // Close current activity. This should close the
-    // application since it is the main activity.
-    public void suicide(View view) {
-        finish();
     }
 }
