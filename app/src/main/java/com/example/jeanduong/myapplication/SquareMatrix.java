@@ -2,8 +2,6 @@ package com.example.jeanduong.myapplication;
 
 import java.util.Arrays;
 
-import static java.lang.Math.pow;
-
 public class SquareMatrix {
 
     int dimension = 2;
