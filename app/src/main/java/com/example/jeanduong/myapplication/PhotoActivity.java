@@ -323,7 +323,7 @@ public class PhotoActivity extends Activity {
             captureBuilder.set(CaptureRequest.CONTROL_MODE, CameraMetadata.CONTROL_MODE_AUTO);
 
             //final File file = new File(Environment.getExternalStorageDirectory() + "/pic.jpg");
-            final File file = new File(MainActivity.SNAPSHOT_FILE_NAME);
+            final File file = new File(MainActivity.SNAPSHOT_IMAGE_FILE_NAME);
 
             ImageReader.OnImageAvailableListener readerListener = new ImageReader.OnImageAvailableListener() {
                 @Override

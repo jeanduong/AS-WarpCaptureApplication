@@ -15,7 +15,7 @@ public class CropChooserActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_crop_chooser);
 
-        final Bitmap bm = BitmapFactory.decodeFile(MainActivity.SNAPSHOT_FILE_NAME);
+        final Bitmap bm = BitmapFactory.decodeFile(MainActivity.SNAPSHOT_IMAGE_FILE_NAME);
         final ImageView snapshot_layer = (ImageView) findViewById(R.id.display_view);
 
         snapshot_layer.setImageBitmap(bm);

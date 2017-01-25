@@ -39,7 +39,7 @@ public class CropActivity extends Activity {
         final QuadDragView drag_layer = (QuadDragView) findViewById(R.id.drag_view);
 
         // Load image from file
-        final Bitmap bm = BitmapFactory.decodeFile(MainActivity.SNAPSHOT_FILE_NAME);
+        final Bitmap bm = BitmapFactory.decodeFile(MainActivity.SNAPSHOT_IMAGE_FILE_NAME);
 
         // Set for display
         snapshot_layer.setImageBitmap(bm);
@@ -125,17 +125,8 @@ public class CropActivity extends Activity {
                     output_xml.flush();
                     output_xml.close();
 
-                    File tmp = new File(MainActivity.SNAPSHOT_FILE_NAME);
+                    File tmp = new File(MainActivity.SNAPSHOT_IMAGE_FILE_NAME);
                     tmp.deleteOnExit();
-
-                    // Duplicate in ZOI image file
-                    FileInputStream fis = new FileInputStream(new File(MainActivity.ROOT_FILE_NAME + str_date + ".jpg"));
-                    FileOutputStream fos = new FileOutputStream(new File(MainActivity.ZOI_FILE_NAME));
-                    FileChannel fic = fis.getChannel();
-                    FileChannel foc = fos.getChannel();
-                    fic.transferTo(0, fic.size(), foc);
-                    fis.close();
-                    fos.close();
 
                     Toast.makeText(CropActivity.this, "Data saved at " + str_date , Toast.LENGTH_SHORT).show();
                 }

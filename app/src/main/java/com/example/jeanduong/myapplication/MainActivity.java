@@ -24,12 +24,15 @@ public class MainActivity extends Activity {
     final static int CHOOSE_CROP_REQUEST_CODE = 13;
     final static int RECT_CROP_REQUEST_CODE = 17;
     final static int QUAD_CROP_REQUEST_CODE = 19;
+    final static int TEXT_ZOI_SELECTION_REQUEST_CODE = 23;
 
     private static final String TAG = "Main activity"; // For log output
 
     final static String ROOT_FILE_NAME = Environment.getExternalStorageDirectory() + File.separator;
-    final static String ZOI_FILE_NAME = Environment.getExternalStorageDirectory() + File.separator + "zoi.jpg";
-    final static String SNAPSHOT_FILE_NAME = Environment.getExternalStorageDirectory() + File.separator + "snapshot.jpg";
+
+    final static String SNAPSHOT_IMAGE_FILE_NAME = ROOT_FILE_NAME + "snapshot.jpg";
+    static String CURRENT_IMAGE_BASE_NAME = new String();
+    static String CURRENT_IMAGE_FULL_NAME = new String();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -94,7 +97,7 @@ public class MainActivity extends Activity {
             else
             {
                 Toast.makeText(this, "Photo activity failed", Toast.LENGTH_LONG).show();
-                Log.e(TAG, "****** Photo activity failed");
+                Log.d(TAG, "Photo activity failed");
             }
         }
         else if (request_code == CHOOSE_CROP_REQUEST_CODE)
@@ -118,11 +121,12 @@ public class MainActivity extends Activity {
         else if (request_code == RECT_CROP_REQUEST_CODE ||
                 request_code == QUAD_CROP_REQUEST_CODE) {
             if (result_code == Activity.RESULT_OK) {
-                Log.e(TAG, "****** Crop done");
+                Log.d(TAG, "Crop done");
 
-                Intent itt_display_crop = new Intent(this, DisplayCropActivity.class);
+                Intent itt_select_text_zois = new Intent(this, SelectArea.class);
 
-                startActivity(itt_display_crop);
+                if (itt_select_text_zois.resolveActivity(getPackageManager()) != null)
+                    startActivityForResult(itt_select_text_zois, TEXT_ZOI_SELECTION_REQUEST_CODE);
             }
         }
     }

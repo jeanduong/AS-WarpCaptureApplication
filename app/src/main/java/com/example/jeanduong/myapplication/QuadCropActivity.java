@@ -20,7 +20,10 @@ import org.opencv.core.Scalar;
 import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.nio.channels.FileChannel;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -57,7 +60,7 @@ public class QuadCropActivity extends Activity {
         final QuadDragView drag_layer = (QuadDragView) findViewById(R.id.drag_view);
 
         // Load image from file
-        final Bitmap bm = BitmapFactory.decodeFile(MainActivity.SNAPSHOT_FILE_NAME);
+        final Bitmap bm = BitmapFactory.decodeFile(MainActivity.SNAPSHOT_IMAGE_FILE_NAME);
 
         // Set for display
         snapshot_layer.setImageBitmap(bm);
@@ -112,6 +115,9 @@ public class QuadCropActivity extends Activity {
                 // Compute perspective transform, stretch quadrilateral
                 // portion of image to rectangular one before saving it
 
+                MainActivity.CURRENT_IMAGE_BASE_NAME = str_date;
+                MainActivity.CURRENT_IMAGE_FULL_NAME = MainActivity.ROOT_FILE_NAME + str_date + ".jpg";
+
                 try {
                     // Estimate perspective transformation between drag point
                     // quadrilateral and their enclosing rectangle
@@ -152,27 +158,27 @@ public class QuadCropActivity extends Activity {
                     Bitmap dst_img = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
                     Utils.matToBitmap(dst_mat, dst_img);
 
-                    FileOutputStream output_stream = new FileOutputStream(MainActivity.ZOI_FILE_NAME);
+                    FileOutputStream output_stream = new FileOutputStream(MainActivity.CURRENT_IMAGE_FULL_NAME);
                     dst_img.compress(Bitmap.CompressFormat.JPEG, 100, output_stream);
                     output_stream.flush();
                     output_stream.close();
 
-                    Toast.makeText(QuadCropActivity.this, "Image saved at " + str_date , Toast.LENGTH_SHORT).show();
+                    File tmp = new File(MainActivity.SNAPSHOT_IMAGE_FILE_NAME);
+                    tmp.deleteOnExit();
+
+                    Toast.makeText(QuadCropActivity.this, "Image saved at " + str_date, Toast.LENGTH_SHORT).show();
                 }
                 catch (Exception e) {
+                    Toast.makeText(QuadCropActivity.this, "Failed to save image", Toast.LENGTH_SHORT).show();
                     Log.e(TAG, "Failed to save image");
                 }
 
                 Intent result_intent = new Intent();
 
                 if (getParent() == null) {
-                    setResult(Activity.RESULT_OK, result_intent);
-                }
+                    setResult(Activity.RESULT_OK, result_intent);}
                 else {
-                    getParent().setResult(Activity.RESULT_OK, result_intent);
-                }
-
-                finish();
+                    getParent().setResult(Activity.RESULT_OK, result_intent);}
             }
         });
     }
@@ -180,6 +186,7 @@ public class QuadCropActivity extends Activity {
     public void onResume()
     {
         super.onResume();
+
         if (!OpenCVLoader.initDebug()) {
             Log.d("OpenCV", "Internal OpenCV library not found. Using OpenCV Manager for initialization");
             OpenCVLoader.initAsync(OpenCVLoader.OPENCV_VERSION_3_0_0, this, mLoaderCallback);

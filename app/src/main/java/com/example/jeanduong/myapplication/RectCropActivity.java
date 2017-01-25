@@ -24,7 +24,6 @@ import static java.lang.Math.min;
 public class RectCropActivity extends Activity {
 
     private static final String TAG = "Rect crop activity"; // For log output
-    private String imageCropPath;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,7 +34,7 @@ public class RectCropActivity extends Activity {
         final RectDragView drag_layer = (RectDragView) findViewById(R.id.drag_view);
 
         // Load image from file
-        final Bitmap bm = BitmapFactory.decodeFile(MainActivity.SNAPSHOT_FILE_NAME);
+        final Bitmap bm = BitmapFactory.decodeFile(MainActivity.SNAPSHOT_IMAGE_FILE_NAME);
 
         // Set for display
         snapshot_layer.setImageBitmap(bm);
@@ -105,24 +104,17 @@ public class RectCropActivity extends Activity {
                 Date present = cal.getTime();
                 String str_date = simple_format.format(present);
 
-                imageCropPath = MainActivity.ROOT_FILE_NAME + str_date + ".jpg";
+                MainActivity.CURRENT_IMAGE_BASE_NAME = str_date;
+                MainActivity.CURRENT_IMAGE_FULL_NAME = MainActivity.ROOT_FILE_NAME + str_date + ".jpg";
+
                 try {
-                    FileOutputStream output_img = new FileOutputStream(MainActivity.ROOT_FILE_NAME + str_date + ".jpg");
+                    FileOutputStream output_img = new FileOutputStream(MainActivity.CURRENT_IMAGE_FULL_NAME);
                     targetBitmap.compress(Bitmap.CompressFormat.JPEG, 100, output_img);
                     output_img.flush();
                     output_img.close();
 
-                    File tmp = new File(MainActivity.SNAPSHOT_FILE_NAME);
+                    File tmp = new File(MainActivity.SNAPSHOT_IMAGE_FILE_NAME);
                     tmp.deleteOnExit();
-
-                    // Duplicate in ZOI image file
-                    FileInputStream fis = new FileInputStream(new File(MainActivity.ROOT_FILE_NAME + str_date + ".jpg"));
-                    FileOutputStream fos = new FileOutputStream(new File(MainActivity.ZOI_FILE_NAME));
-                    FileChannel fic = fis.getChannel();
-                    FileChannel foc = fos.getChannel();
-                    fic.transferTo(0, fic.size(), foc);
-                    fis.close();
-                    fos.close();
 
                     Toast.makeText(RectCropActivity.this, "Image saved at " + str_date , Toast.LENGTH_SHORT).show();
                 }
@@ -133,15 +125,9 @@ public class RectCropActivity extends Activity {
                 Intent result_intent = new Intent();
 
                 if (getParent() == null) {
-                    setResult(Activity.RESULT_OK, result_intent);
-                }
+                    setResult(Activity.RESULT_OK, result_intent);}
                 else {
-                    getParent().setResult(Activity.RESULT_OK, result_intent);
-                }
-
-                Intent intent = new Intent(RectCropActivity.this, SelectArea.class);
-                intent.putExtra("CapturePath", imageCropPath);
-                startActivity(intent);
+                    getParent().setResult(Activity.RESULT_OK, result_intent);}
             }
         });
     }
