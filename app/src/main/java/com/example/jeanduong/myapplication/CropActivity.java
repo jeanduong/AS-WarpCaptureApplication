@@ -28,6 +28,7 @@ import static java.lang.Math.min;
 public class CropActivity extends Activity {
 
     private static final String TAG = "Crop activity"; // For log output
+    private String imageCropPath;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -111,8 +112,10 @@ public class CropActivity extends Activity {
 
                 String data_points = writeXml(new_x_1, new_y_1, new_x_2, new_y_2, new_x_3, new_y_3, new_x_4, new_y_4);
 
+                imageCropPath = MainActivity.ROOT_FILE_NAME + str_date + ".jpg";
+
                 try {
-                    FileOutputStream output_img = new FileOutputStream(MainActivity.ROOT_FILE_NAME + str_date + ".jpg");
+                    FileOutputStream output_img = new FileOutputStream(imageCropPath);
                     targetBitmap.compress(Bitmap.CompressFormat.JPEG, 100, output_img);
                     output_img.flush();
                     output_img.close();
@@ -149,7 +152,7 @@ public class CropActivity extends Activity {
                     getParent().setResult(Activity.RESULT_OK, result_intent);
                 }
 
-                finish();
+//                finish();
             }
         });
     }

@@ -1,0 +1,46 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    tools:context="com.example.jeanduong.myapplication.SelectArea">
+
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center"
+        android:id="@+id/preview_camera"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentLeft="false"
+        android:layout_alignParentTop="false"
+        android:adjustViewBounds="true"
+        android:scaleType="centerCrop" />
+
+    <com.example.jeanduong.myapplication.SelectAreaView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/AreaView"
+        android:layout_alignParentTop="true" />
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="wrap_content"
+        android:layout_height="fill_parent"
+        android:layout_alignParentEnd="true"
+        android:id="@+id/linearLayout"
+        android:gravity="center"
+        android:weightSum="1">
+
+        <ImageButton
+            android:layout_width="60dp"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="Save"
+            android:id="@+id/buttonSave"
+            android:src="@android:drawable/ic_menu_save"
+            android:layout_weight="0.001" />
+
+    </LinearLayout>
+
+</RelativeLayout>

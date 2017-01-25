@@ -24,6 +24,7 @@ import static java.lang.Math.min;
 public class RectCropActivity extends Activity {
 
     private static final String TAG = "Rect crop activity"; // For log output
+    private String imageCropPath;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,7 +52,6 @@ public class RectCropActivity extends Activity {
                 else {
                     getParent().setResult(Activity.RESULT_CANCELED, result_intent);
                 }
-
                 finish();
             }
         });
@@ -105,6 +105,7 @@ public class RectCropActivity extends Activity {
                 Date present = cal.getTime();
                 String str_date = simple_format.format(present);
 
+                imageCropPath = MainActivity.ROOT_FILE_NAME + str_date + ".jpg";
                 try {
                     FileOutputStream output_img = new FileOutputStream(MainActivity.ROOT_FILE_NAME + str_date + ".jpg");
                     targetBitmap.compress(Bitmap.CompressFormat.JPEG, 100, output_img);
@@ -138,7 +139,9 @@ public class RectCropActivity extends Activity {
                     getParent().setResult(Activity.RESULT_OK, result_intent);
                 }
 
-                finish();
+                Intent intent = new Intent(RectCropActivity.this, SelectArea.class);
+                intent.putExtra("CapturePath", imageCropPath);
+                startActivity(intent);
             }
         });
     }

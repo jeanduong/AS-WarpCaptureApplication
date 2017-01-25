@@ -39,6 +39,7 @@
         <activity
             android:name=".DisplayCropActivity"
             android:screenOrientation="landscape" />
+        <activity android:name=".SelectArea"></activity>
     </application>
 
 </manifest>
